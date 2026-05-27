@@ -10,6 +10,7 @@ const _WorldZone := preload("res://scripts/world/world_zone.gd")
 const _MixelSpriteLoader := preload("res://scripts/world/mixel_sprite_loader.gd")
 const _LuaScriptRunner := preload("res://scripts/lua/lua_script_runner.gd")
 const _LuaEditorController := preload("res://scripts/ui/lua_editor_controller.gd")
+const _WorldCombatBootstrap := preload("res://scripts/combat/world_combat_bootstrap.gd")
 const TILE_SIZE := 32
 
 @onready var _ground: TileMapLayer = $Ground
@@ -37,6 +38,8 @@ func _ready() -> void:
 	world = _TickWorld.new(walkability)
 	_manual_input = _ManualTickInput.new()
 	world.set_entity_position(&"player", Vector2i(8, 13))
+	if MvpData.is_loaded():
+		_WorldCombatBootstrap.attach(world, MvpData.store)
 	world.tick_processed.connect(_on_tick_processed)
 	_runner = _TickWorldRunner.new()
 	_runner.world = world
@@ -125,10 +128,20 @@ func _refresh_hud() -> void:
 		lua_line = "Lua: manual"
 	elif _editor_ctrl.is_script_running():
 		lua_line = "Lua: ON"
+	var combat_line := _combat_hud_line()
 	_hud.text = (
-		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\n%s | %s\nWASD (Stop script) | E = editor"
-		% [world.tick_index, cell.x, cell.y, _WorldZone.id_to_string(zone_id), practice, data_line, lua_line]
+		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\n%s | %s | %s\nWASD (Stop script) | E = editor"
+		% [world.tick_index, cell.x, cell.y, _WorldZone.id_to_string(zone_id), practice, data_line, lua_line, combat_line]
 	)
+
+
+func _combat_hud_line() -> String:
+	if world.combat == null:
+		return "Combate: off"
+	var hp: int = world.combat.get_hp(&"player")
+	var xp: int = world.combat.get_player_xp()
+	var gold: int = world.combat.get_player_gold()
+	return "HP %d | XP %d | Oro %d" % [hp, xp, gold]
 
 
 func _mvp_data_hud_line() -> String:

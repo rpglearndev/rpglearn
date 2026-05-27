@@ -4,6 +4,7 @@ extends RefCounted
 
 const _GameAction := preload("res://scripts/core/game_action.gd")
 const _GridWalkability := preload("res://scripts/core/grid_walkability.gd")
+const _CombatSystem := preload("res://scripts/combat/combat_system.gd")
 
 
 const DEFAULT_TICKS_PER_SECOND := 10
@@ -23,6 +24,7 @@ var tick_duration_seconds: float:
 var _action_queue: Array = []
 var _entity_positions: Dictionary = {}
 var _walkability = null
+var combat: CombatSystem = null
 
 
 func _init(walkability = null) -> void:
@@ -57,6 +59,8 @@ func clear_action_queue() -> void:
 
 func step() -> void:
 	tick_index += 1
+	if combat != null:
+		combat.tick_cooldowns()
 	if _action_queue.is_empty():
 		tick_processed.emit(tick_index)
 		return
@@ -85,6 +89,9 @@ func _process_major_action(action) -> void:
 	match action.type:
 		_GameAction.Type.MOVE:
 			_apply_move(action.entity_id, action.direction)
+		_GameAction.Type.ATTACK:
+			if combat != null:
+				combat.process_attack(action.entity_id, action.target_id)
 		_:
 			push_warning("TickWorld: unimplemented action type %s" % action.type)
 

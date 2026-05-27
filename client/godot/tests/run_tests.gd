@@ -18,11 +18,13 @@ func _initialize() -> void:
 	total_failures += _run_suite("res://tests/unit/test_lua_editor_controller.gd", "LuaEditorController")
 	total_failures += _run_suite("res://tests/unit/test_quest_script_validator.gd", "QuestScriptValidator")
 	total_failures += _run_suite("res://tests/unit/test_lua_script_timeout.gd", "LuaScriptTimeout")
+	total_failures += _run_suite("res://tests/unit/test_combat_damage.gd", "CombatDamage")
+	total_failures += _run_suite("res://tests/unit/test_combat_system.gd", "CombatSystem")
 	if total_failures > 0:
 		push_error("%d test assertion(s) failed (all suites)" % total_failures)
 		quit(1)
 	else:
-		print("All tests passed (TickWorld + ManualTickInput + World01 + MvpData + Lua + Editor + Validator).")
+		print("All tests passed (TickWorld + ManualTickInput + World01 + MvpData + Lua + Editor + Validator + Combat).")
 		quit(0)
 
 

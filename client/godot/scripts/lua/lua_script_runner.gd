@@ -19,6 +19,8 @@ const MAX_SCRIPT_TICKS := 500
 
 func setup(world, entity_id: StringName = &"player", tutorial_unlock_all: bool = true) -> void:
 	bridge = LuaApiBridge.new(world, entity_id)
+	if world != null and world.combat != null:
+		bridge.combat = world.combat
 	var store = MvpDataLoader.load_all()
 	var allowed: Array[String] = []
 	if store != null and tutorial_unlock_all:

@@ -33,6 +33,7 @@ func _test_loads_all_files() -> void:
 	_assert_true(store.items.size() >= 8, "items present")
 	_assert_eq(store.quests.size(), 10, "ten tutorial quests")
 	_assert_true(store.shops.has("shop_riverton_trader"), "riverton shop")
+	_assert_true(not store.combat.is_empty(), "combat.json loaded")
 
 
 func _test_monster_power_order() -> void:

@@ -22,6 +22,8 @@ static func load_all() -> MvpDataStore:
 		return null
 	if not _load_quest_templates(store):
 		return null
+	if not _load_combat(store):
+		return null
 	return store
 
 
@@ -87,6 +89,14 @@ static func _load_spawns(store: MvpDataStore) -> bool:
 		return false
 	store.map_id = str(root.get("map_id", ""))
 	store.spawns = root.get("spawns", [])
+	return true
+
+
+static func _load_combat(store: MvpDataStore) -> bool:
+	var root: Variant = _read_json(MvpDataPaths.COMBAT)
+	if root == null or not root is Dictionary:
+		return false
+	store.combat = root
 	return true
 
 

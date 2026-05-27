@@ -10,6 +10,7 @@ var shops: Dictionary = {}
 var spawns: Array = []
 var map_id: String = ""
 var quest_templates: Dictionary = {}
+var combat: Dictionary = {}
 
 
 func get_monster(id: String) -> Dictionary:

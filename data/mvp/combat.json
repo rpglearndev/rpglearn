@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "melee_range": 1,
+  "max_desired_range": 6,
+  "attack_cooldown_ticks": 1,
+  "min_damage": 1,
+  "formula": {
+    "weapon_base": 0,
+    "weapon_scale": 1.0,
+    "class_multipliers": {
+      "warrior": 1.0,
+      "mage": 0.9,
+      "archer": 1.0
+    },
+    "level_factor_divisor": 100
+  },
+  "player_defaults": {
+    "hp": 100,
+    "level": 1,
+    "class": "warrior",
+    "weapon_attack": 5,
+    "melee_skill": 10,
+    "ranged_skill": 10,
+    "magic_skill": 10
+  }
+}

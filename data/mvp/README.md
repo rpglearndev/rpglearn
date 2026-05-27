@@ -2,8 +2,11 @@
 
 JSON de balance y contenido. Fuente de verdad para combate, loot, tienda y misiones (ver `docs/plan.md`).
 
+- `combat.json` — rangos, cooldown, fórmula de daño, defaults del jugador.
+
 | Archivo | Contenido |
 |---------|-----------|
+| `combat.json` | rango, cooldown, fórmula de daño |
 | `monsters.json` | `mob_slime`, `mob_wolf`, `mob_bandit` |
 | `items.json` | armas, armadura, pociones, loot vendible |
 | `quests.json` | 10 misiones tutorial + `api_unlock` |

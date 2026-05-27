@@ -13,6 +13,7 @@ enum Type {
 var type: Type = Type.MOVE
 var entity_id: StringName = &"player"
 var direction: Vector2i = Vector2i.ZERO
+var target_id: StringName = &""
 
 
 static func move(entity_id: StringName, direction: Vector2i):
@@ -20,6 +21,14 @@ static func move(entity_id: StringName, direction: Vector2i):
 	action.type = Type.MOVE
 	action.entity_id = entity_id
 	action.direction = direction
+	return action
+
+
+static func attack(entity_id: StringName, target_id: StringName):
+	var action := new()
+	action.type = Type.ATTACK
+	action.entity_id = entity_id
+	action.target_id = target_id
 	return action
 
 

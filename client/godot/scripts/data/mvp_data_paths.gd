@@ -9,10 +9,11 @@ const QUESTS := DATA_ROOT + "quests.json"
 const SHOP := DATA_ROOT + "shop.json"
 const SPAWNS := DATA_ROOT + "spawns.json"
 const QUEST_TEMPLATES := DATA_ROOT + "quest_templates.json"
+const COMBAT := DATA_ROOT + "combat.json"
 
 
 static func all_json_paths() -> PackedStringArray:
-	return PackedStringArray([MONSTERS, ITEMS, QUESTS, SHOP, SPAWNS, QUEST_TEMPLATES])
+	return PackedStringArray([MONSTERS, ITEMS, QUESTS, SHOP, SPAWNS, QUEST_TEMPLATES, COMBAT])
 
 
 static func global_path(res_path: String) -> String:

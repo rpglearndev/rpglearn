@@ -5,6 +5,7 @@ extends RefCounted
 const GameAction := preload("res://scripts/core/game_action.gd")
 const GridPathfinder := preload("res://scripts/core/grid_pathfinder.gd")
 const LuaGameRng := preload("res://scripts/lua/lua_game_rng.gd")
+const CombatSystem := preload("res://scripts/combat/combat_system.gd")
 
 const DIR_MAP := {
 	"N": Vector2i.UP, "S": Vector2i.DOWN, "E": Vector2i.RIGHT, "W": Vector2i.LEFT,
@@ -13,6 +14,7 @@ const DIR_MAP := {
 
 var world = null
 var entity_id: StringName = &"player"
+var combat: CombatSystem = null
 var rng: LuaGameRng = null
 var _path_queue: Array[Vector2i] = []
 var _last_move_to_ok: bool = true
@@ -71,13 +73,17 @@ func _make_callable(name: String) -> Callable:
 			return Callable(self, "_get_tick")
 		"getPosition":
 			return Callable(self, "_get_position")
-		"getHp", "getMana", "getMaxHp", "getMaxMana", "getLevel", "getClass":
+		"getHp":
+			return Callable(self, "_get_hp")
+		"getMana", "getMaxHp", "getMaxMana", "getLevel", "getClass":
 			return Callable(self, "_stub_number").bind(name)
 		"getSkills", "getInventory":
 			return Callable(self, "_stub_table")
 		"getCapacity", "getCarryWeight":
 			return Callable(self, "_stub_number").bind(name)
-		"nearestEnemy", "nearestLoot":
+		"nearestEnemy":
+			return Callable(self, "_nearest_enemy")
+		"nearestLoot":
 			return Callable(self, "_stub_nil")
 		"isTileWalkable":
 			return Callable(self, "_is_tile_walkable")
@@ -91,6 +97,10 @@ func _make_callable(name: String) -> Callable:
 			return Callable(self, "_game_random")
 		"game_random_int":
 			return Callable(self, "_game_random_int")
+		"attack":
+			return Callable(self, "_attack")
+		"setDesiredRange":
+			return Callable(self, "_set_desired_range")
 		_:
 			return Callable(self, "_stub_nil")
 
@@ -102,6 +112,12 @@ func _get_tick() -> int:
 func _get_position() -> Vector2i:
 	## Vector2i en Lua admite pos.x / pos.y; Dictionary queda como Variant opaco.
 	return world.get_entity_position(entity_id)
+
+
+func _get_hp() -> int:
+	if combat == null:
+		return 0
+	return combat.get_hp(entity_id)
 
 
 func _stub_number(_name: String) -> int:
@@ -152,3 +168,28 @@ func _game_random() -> float:
 
 func _game_random_int(min_v: int, max_v: int) -> int:
 	return rng.random_int(min_v, max_v)
+
+
+func _nearest_enemy(max_range: int) -> Variant:
+	if combat == null:
+		return null
+	var id: StringName = combat.nearest_enemy(entity_id, max_range)
+	if id == &"":
+		return null
+	return str(id)
+
+
+func _attack(target_name: String) -> bool:
+	_register_action()
+	if combat == null:
+		return false
+	var target_id := StringName(target_name)
+	if not combat.can_attack(entity_id, target_id):
+		return false
+	world.enqueue_action(GameAction.attack(entity_id, target_id))
+	return true
+
+
+func _set_desired_range(tiles: int) -> void:
+	if combat != null:
+		combat.set_desired_range(tiles)
