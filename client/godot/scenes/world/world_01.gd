@@ -11,6 +11,7 @@ const _MixelSpriteLoader := preload("res://scripts/world/mixel_sprite_loader.gd"
 const _LuaScriptRunner := preload("res://scripts/lua/lua_script_runner.gd")
 const _LuaEditorController := preload("res://scripts/ui/lua_editor_controller.gd")
 const _WorldCombatBootstrap := preload("res://scripts/combat/world_combat_bootstrap.gd")
+const _MobVisualSpawner := preload("res://scripts/world/mob_visual_spawner.gd")
 const TILE_SIZE := 32
 
 @onready var _ground: TileMapLayer = $Ground
@@ -29,6 +30,7 @@ var _manual_input = null
 var _zone_map = null
 var _lua_runner = null
 var _editor_ctrl = null
+var _mob_visuals = null
 
 
 func _ready() -> void:
@@ -38,8 +40,10 @@ func _ready() -> void:
 	world = _TickWorld.new(walkability)
 	_manual_input = _ManualTickInput.new()
 	world.set_entity_position(&"player", Vector2i(8, 13))
+	_mob_visuals = _MobVisualSpawner.new()
 	if MvpData.is_loaded():
 		_WorldCombatBootstrap.attach(world, MvpData.store)
+		_mob_visuals.build(_entities, world, world.combat, TILE_SIZE)
 	world.tick_processed.connect(_on_tick_processed)
 	_runner = _TickWorldRunner.new()
 	_runner.world = world
@@ -47,7 +51,7 @@ func _ready() -> void:
 	_entities.y_sort_enabled = true
 	_player.texture = _load_player_texture()
 	_setup_camera_limits()
-	_sync_player_visual()
+	_sync_entity_visuals()
 	if _joystick.has_signal("cardinal_changed"):
 		_joystick.cardinal_changed.connect(_on_joystick_cardinal)
 	_lua_runner = _LuaScriptRunner.new()
@@ -78,7 +82,7 @@ func _on_tick_processed(_tick_index: int) -> void:
 					_lua_editor.log_console(_editor_ctrl.on_script_runtime_error(raw))
 	elif _editor_ctrl.allows_manual_tick():
 		_manual_input.on_tick_processed(world, &"player")
-	_sync_player_visual()
+	_sync_entity_visuals()
 	_refresh_hud()
 
 
@@ -88,10 +92,12 @@ func _setup_camera_limits() -> void:
 	_sync_camera_position()
 
 
-func _sync_player_visual() -> void:
+func _sync_entity_visuals() -> void:
 	var cell: Vector2i = world.get_entity_position(&"player")
 	_player.position = Vector2(cell.x * TILE_SIZE + TILE_SIZE / 2, cell.y * TILE_SIZE + TILE_SIZE / 2)
 	_player.z_index = int(_player.position.y)
+	if _mob_visuals != null:
+		_mob_visuals.sync(world, world.combat, TILE_SIZE)
 	_sync_camera_position()
 
 
@@ -137,11 +143,15 @@ func _refresh_hud() -> void:
 
 func _combat_hud_line() -> String:
 	if world.combat == null:
-		return "Combate: off"
+		return "Combate: off (link_mvp_data.ps1)"
 	var hp: int = world.combat.get_hp(&"player")
 	var xp: int = world.combat.get_player_xp()
 	var gold: int = world.combat.get_player_gold()
-	return "HP %d | XP %d | Oro %d" % [hp, xp, gold]
+	var alive := 0
+	for id: StringName in world.combat.list_mob_entity_ids():
+		if world.combat.is_entity_alive(id):
+			alive += 1
+	return "HP %d | XP %d | Oro %d | Mobs %d" % [hp, xp, gold, alive]
 
 
 func _mvp_data_hud_line() -> String:

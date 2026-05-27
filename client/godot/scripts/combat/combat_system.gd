@@ -72,6 +72,25 @@ func get_hp(entity_id: StringName) -> int:
 	return ec.hp if ec != null else 0
 
 
+func get_mob_id(entity_id: StringName) -> String:
+	var ec: EntityCombat = _entities.get(entity_id)
+	return ec.mob_id if ec != null else ""
+
+
+func is_entity_alive(entity_id: StringName) -> bool:
+	var ec: EntityCombat = _entities.get(entity_id)
+	return ec != null and ec.is_alive()
+
+
+func list_mob_entity_ids() -> Array[StringName]:
+	var ids: Array[StringName] = []
+	for key in _entities:
+		var ec: EntityCombat = _entities[key]
+		if not ec.is_player:
+			ids.append(key)
+	return ids
+
+
 func get_player_xp() -> int:
 	return _player_xp
 
