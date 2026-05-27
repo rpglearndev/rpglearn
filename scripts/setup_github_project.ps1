@@ -33,23 +33,22 @@ if ($found) {
     Write-Host "Creado: https://github.com/orgs/$Org/projects/$projectNumber"
 }
 
-# Optional: extra Status columns (GitHub Projects v2)
-$statusNames = @("Backlog", "Ready", "In Progress", "Review", "Done")
-foreach ($name in $statusNames) {
-    gh project field-create $projectNumber --owner $Org --name "Status" --single-select-option $name 2>$null
-}
+# Status columns: GitHub crea Todo / In Progress / Done por defecto.
+# Para Backlog, Ready, Review: en el board -> ... -> Settings -> Fields -> Status -> edit options.
 
 $issues = gh issue list --repo $fullRepo --state all --limit 100 --json number | ConvertFrom-Json
 $added = 0
+$skipped = 0
 foreach ($i in $issues) {
     $url = "$baseUrl/$($i.number)"
     gh project item-add $projectNumber --owner $Org --url $url 2>$null
-    if ($LASTEXITCODE -eq 0) { $added++ }
+    if ($LASTEXITCODE -eq 0) { $added++ } else { $skipped++ }
 }
-Write-Host "Issues enlazadas al board: $added / $($issues.Count)"
+Write-Host "Issues enlazadas: $added nuevas, $skipped ya estaban o fallaron (total issues repo: $($issues.Count))"
 Write-Host ""
 Write-Host "Abre el tablero:" -ForegroundColor Green
 Write-Host "  https://github.com/orgs/$Org/projects/$projectNumber" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Columnas sugeridas (Status): Backlog -> Ready -> In Progress -> Review -> Done"
-Write-Host "Arrastra las cards o usa el menu Status en cada issue."
+Write-Host "Columnas Status (manual en GitHub UI):" -ForegroundColor Yellow
+Write-Host "  Settings -> Fields -> Status -> anade: Backlog, Ready, Review (ademas de Todo/In Progress/Done)"
+Write-Host "  Orden P0: US-001 Done, US-002 Ready, US-010/011/012/090 en Backlog"
