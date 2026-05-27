@@ -38,7 +38,7 @@ func _test_run_stop_override() -> void:
 	ctrl.setup(world, &"player", runner, manual)
 	_assert_true(not ctrl.is_script_running(), "idle")
 	var patrol := "function on_tick()\n  for i = 1, 2 do move(\"N\") end\nend\n"
-	var result: Dictionary = ctrl.run_script(patrol)
+	var result: Dictionary = ctrl.run_script(patrol, "quest_loop_patrol")
 	_assert_true(result.get("ok", false), "run loads")
 	_assert_true(ctrl.is_script_running(), "running after run")
 	runner.on_world_tick()
@@ -46,7 +46,7 @@ func _test_run_stop_override() -> void:
 	ctrl.stop_script()
 	_assert_true(not ctrl.is_script_running(), "stopped")
 	_assert_eq(world.pending_action_count(), 0, "stop clears action queue")
-	ctrl.run_script("function on_tick() end\n")
+	ctrl.run_script("function on_tick() end\n", "")
 	ctrl.enable_manual_override()
 	_assert_true(ctrl.is_manual_override(), "override on")
 	_assert_true(not ctrl.is_script_running(), "override stops script")

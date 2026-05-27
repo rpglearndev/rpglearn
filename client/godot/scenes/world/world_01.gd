@@ -18,6 +18,7 @@ const TILE_SIZE := 32
 @onready var _player: Sprite2D = $Entities/Player
 @onready var _camera: Camera2D = $Camera2D
 @onready var _hud: Label = $HUD/InfoLabel
+@onready var _hud_layer: CanvasLayer = $HUD
 @onready var _joystick: Control = $HUD/VirtualJoystick
 @onready var _lua_editor = $LuaEditor
 
@@ -51,16 +52,27 @@ func _ready() -> void:
 	_editor_ctrl = _LuaEditorController.new()
 	_editor_ctrl.setup(world, &"player", _lua_runner, _manual_input)
 	_lua_editor.bind_controller(_editor_ctrl)
+	_lua_editor.closed.connect(_on_lua_editor_closed)
 	_refresh_hud()
 
 
 func _on_tick_processed(_tick_index: int) -> void:
-	if _editor_ctrl.allows_lua_tick():
+	var manual_dir := Vector2i.ZERO
+	if not _lua_editor.is_open():
+		manual_dir = _manual_input.effective_direction()
+	if manual_dir != Vector2i.ZERO:
+		if _editor_ctrl.is_script_running():
+			_editor_ctrl.interrupt_script_for_manual()
+		_manual_input.on_tick_processed(world, &"player")
+	elif _editor_ctrl.allows_lua_tick():
 		_lua_runner.on_world_tick()
 		if not _lua_runner.enabled:
-			var raw: String = _lua_runner.get_last_lua_error()
-			if not raw.is_empty() and _lua_editor.is_open():
-				_lua_editor.log_console(_editor_ctrl.on_script_runtime_error(raw))
+			if _lua_runner.timeout_triggered and _lua_editor.is_open():
+				_lua_editor.log_console(_editor_ctrl.on_script_runtime_error(""))
+			else:
+				var raw: String = _lua_runner.get_last_lua_error()
+				if not raw.is_empty() and _lua_editor.is_open():
+					_lua_editor.log_console(_editor_ctrl.on_script_runtime_error(raw))
 	elif _editor_ctrl.allows_manual_tick():
 		_manual_input.on_tick_processed(world, &"player")
 	_sync_player_visual()
@@ -100,6 +112,10 @@ func _clamp_camera_center(target: Vector2) -> Vector2:
 
 
 func _refresh_hud() -> void:
+	if _lua_editor.is_open():
+		_hud_layer.visible = false
+		return
+	_hud_layer.visible = true
 	var cell: Vector2i = world.get_entity_position(&"player")
 	var zone_id: int = _zone_map.get_zone(cell)
 	var practice := "sí" if _zone_map.is_practice_area(cell) else "no"
@@ -110,7 +126,7 @@ func _refresh_hud() -> void:
 	elif _editor_ctrl.is_script_running():
 		lua_line = "Lua: ON"
 	_hud.text = (
-		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\n%s | %s\nWASD | E = editor Lua"
+		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\n%s | %s\nWASD (Stop script) | E = editor"
 		% [world.tick_index, cell.x, cell.y, _WorldZone.id_to_string(zone_id), practice, data_line, lua_line]
 	)
 
@@ -122,9 +138,17 @@ func _mvp_data_hud_line() -> String:
 	return "MVP data: %d mobs, %d items, %d quests" % [s.monsters.size(), s.items.size(), s.quests.size()]
 
 
+func _on_lua_editor_closed() -> void:
+	_manual_input.clear_active(world, &"player")
+	_refresh_hud()
+
+
 func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed("toggle_lua_editor"):
-		_lua_editor.toggle_visible()
+	## E solo abre el editor; cerrar con Esc o botón Cerrar (evita cerrar al escribir "e").
+	if Input.is_action_just_pressed("toggle_lua_editor") and not _lua_editor.is_open():
+		_lua_editor.open_editor()
+		_manual_input.clear_active(world, &"player")
+		_refresh_hud()
 	elif OS.is_debug_build() and Input.is_action_just_pressed("debug_mvp_reload"):
 		if MvpData.reload():
 			_lua_editor.populate_quests()
@@ -134,6 +158,12 @@ func _process(_delta: float) -> void:
 func _unhandled_key_input(event: InputEvent) -> void:
 	if _lua_editor.is_open():
 		return
+	if _editor_ctrl.is_script_running() and event is InputEventKey:
+		var key := event as InputEventKey
+		if key.pressed and not key.echo and _manual_input.handle_key_event(world, &"player", event):
+			_editor_ctrl.interrupt_script_for_manual()
+			get_viewport().set_input_as_handled()
+			return
 	if _manual_input.handle_key_event(world, &"player", event):
 		get_viewport().set_input_as_handled()
 

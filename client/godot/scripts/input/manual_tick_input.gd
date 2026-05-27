@@ -13,6 +13,10 @@ var joystick_cardinal: Vector2i = Vector2i.ZERO
 func effective_direction() -> Vector2i:
 	if _keyboard_held != Vector2i.ZERO:
 		return _keyboard_held
+	## Tras clear_active (p. ej. Run Lua) la tecla sigue físicamente pulsada sin nuevo keydown.
+	var polled := _poll_wasd_direction()
+	if polled != Vector2i.ZERO:
+		return polled
 	return joystick_cardinal
 
 
@@ -71,4 +75,17 @@ static func _keycode_to_direction(keycode: int) -> Vector2i:
 			return Vector2i.LEFT
 		KEY_D, KEY_RIGHT:
 			return Vector2i.RIGHT
+	return Vector2i.ZERO
+
+
+static func _poll_wasd_direction() -> Vector2i:
+	## Una sola cardinal (prioridad D→A→S→W) si no hay _keyboard_held.
+	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+		return Vector2i.RIGHT
+	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+		return Vector2i.LEFT
+	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+		return Vector2i.DOWN
+	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+		return Vector2i.UP
 	return Vector2i.ZERO

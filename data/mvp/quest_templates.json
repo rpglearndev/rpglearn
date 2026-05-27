@@ -3,7 +3,7 @@
   "templates": [
     {
       "quest_id": "quest_variables_state",
-      "template": "function on_tick()\n  local hp = getHp()\n  local mana = getMana()\n  local pos = getPosition()\n  -- TODO: usa pos.x y pos.y\nend\n"
+      "template": "function on_tick()\n  local hp = getHp()\n  local mana = getMana()\n  local pos = getPosition()\n  -- Añade debajo (Validar antes de Run):\n  -- local x = pos.x\n  -- local y = pos.y\nend\n"
     },
     {
       "quest_id": "quest_if_safe_or_heal",

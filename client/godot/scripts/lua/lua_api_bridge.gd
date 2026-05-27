@@ -16,6 +16,9 @@ var entity_id: StringName = &"player"
 var rng: LuaGameRng = null
 var _path_queue: Array[Vector2i] = []
 var _last_move_to_ok: bool = true
+var _actions_this_lua_tick: int = 0
+
+const MAX_ACTIONS_PER_LUA_TICK := 12
 
 
 func _init(p_world, p_entity_id: StringName = &"player") -> void:
@@ -31,9 +34,18 @@ func build_callables(allowed: Array[String]) -> Dictionary:
 	return out
 
 
+func begin_action_budget() -> void:
+	_actions_this_lua_tick = 0
+
+
+func exceeded_action_budget() -> bool:
+	return _actions_this_lua_tick > MAX_ACTIONS_PER_LUA_TICK
+
+
 func consume_path_step() -> void:
 	if _path_queue.is_empty():
 		return
+	_register_action()
 	var next_cell: Vector2i = _path_queue.pop_front()
 	var current: Vector2i = world.get_entity_position(entity_id)
 	var delta: Vector2i = next_cell - current
@@ -113,13 +125,19 @@ func _distance_to(x: int, y: int) -> int:
 	return absi(c.x - x) + absi(c.y - y)
 
 
+func _register_action() -> void:
+	_actions_this_lua_tick += 1
+
+
 func _move(dir_name: String) -> void:
+	_register_action()
 	var dir: Vector2i = DIR_MAP.get(dir_name.to_upper(), Vector2i.ZERO)
 	if dir != Vector2i.ZERO:
 		world.enqueue_action(GameAction.move(entity_id, dir))
 
 
 func _move_to(x: int, y: int) -> bool:
+	_register_action()
 	var from: Vector2i = world.get_entity_position(entity_id)
 	var to := Vector2i(x, y)
 	var path: Array[Vector2i] = GridPathfinder.find_path(world.get_walkability(), from, to)

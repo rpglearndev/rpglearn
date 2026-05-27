@@ -15,6 +15,10 @@ const MESSAGES: Dictionary = {
 		"es": "Error al ejecutar el script.",
 		"en": "Error while running the script.",
 	},
+	"lua.error.runtime.timeout_loop": {
+		"es": "El script tardó demasiado o encoló demasiadas acciones (posible bucle).",
+		"en": "Script ran too long or queued too many actions (possible loop).",
+	},
 	"lua.error.extension_missing": {
 		"es": "Lua no está instalado (setup_lua_gdextension.ps1).",
 		"en": "Lua extension missing (run setup_lua_gdextension.ps1).",

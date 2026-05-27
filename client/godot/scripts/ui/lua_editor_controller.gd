@@ -3,6 +3,8 @@ extends RefCounted
 ## Run/Stop/override manual para el editor Lua (US-031).
 
 const LuaErrorI18n := preload("res://scripts/lua/lua_error_i18n.gd")
+const QuestScriptValidator := preload("res://scripts/quest/quest_script_validator.gd")
+const QuestValidationI18n := preload("res://scripts/quest/quest_validation_i18n.gd")
 
 var world = null
 var entity_id: StringName = &"player"
@@ -20,9 +22,68 @@ func setup(p_world, p_entity_id: StringName, p_runner, p_manual) -> void:
 	manual_input = p_manual
 
 
-func run_script(source: String) -> Dictionary:
+func validate_script(quest_id: String, source: String) -> Dictionary:
+	var goal := QuestValidationI18n.goal_for_quest(quest_id, locale)
+	var result: Dictionary = QuestScriptValidator.validate(quest_id, source, locale)
+	if result.get("passed", false):
+		last_console_key = "quest.validation.passed"
+		var ok_text := QuestValidationI18n.translate("quest.validation.passed", locale)
+		return {
+			"ok": true,
+			"key": last_console_key,
+			"text": _format_validation_message(goal, ok_text, "", "", ""),
+			"goal": goal,
+		}
+	last_console_key = str(result.get("missing_key", ""))
+	return {
+		"ok": false,
+		"key": last_console_key,
+		"text": _format_validation_message(
+			goal,
+			str(result.get("missing_text", "")),
+			str(result.get("hint_text", "")),
+			str(result.get("example_text", "")),
+			last_console_key,
+		),
+		"validation": result,
+		"goal": goal,
+	}
+
+
+static func _format_validation_message(
+	goal: String,
+	main: String,
+	hint: String,
+	example: String,
+	tech_key: String,
+) -> String:
+	var lines: PackedStringArray = []
+	if not goal.is_empty():
+		lines.append("OBJETIVO: %s" % goal)
+		lines.append("---")
+	if not main.is_empty():
+		lines.append(main)
+	if not hint.is_empty():
+		lines.append("")
+		lines.append("AÑADE AL SCRIPT:")
+		lines.append(hint)
+	if not example.is_empty():
+		lines.append("")
+		lines.append("REFERENCIA:")
+		lines.append(example)
+	if not tech_key.is_empty():
+		lines.append("")
+		lines.append("(%s)" % tech_key)
+	return "\n".join(lines)
+
+
+func run_script(source: String, quest_id: String = "") -> Dictionary:
 	manual_override = false
 	last_console_key = ""
+	if not quest_id.is_empty():
+		var check: Dictionary = validate_script(quest_id, source)
+		if not check.get("ok", false):
+			return check
 	if runner == null:
 		return _fail("lua.error.runtime.generic", "runner missing")
 	const LuaSandbox := preload("res://scripts/lua/lua_sandbox.gd")
@@ -31,10 +92,18 @@ func run_script(source: String) -> Dictionary:
 	if not runner.load_source(source):
 		var raw: String = runner.get_last_lua_error()
 		return _fail_from_raw(raw)
+	runner.reset_runtime_limits()
 	runner.enabled = true
 	manual_input.clear_active(world, entity_id)
 	last_console_key = "ui.editor.run_ok"
 	return {"ok": true, "key": last_console_key, "text": LuaErrorI18n.translate_key(last_console_key, locale)}
+
+
+func interrupt_script_for_manual() -> void:
+	## WASD con editor cerrado: prioridad movimiento, detiene Lua.
+	if runner != null and runner.enabled:
+		runner.halt()
+	manual_override = false
 
 
 func stop_script() -> Dictionary:
@@ -53,6 +122,9 @@ func enable_manual_override() -> Dictionary:
 
 func on_script_runtime_error(raw: String) -> Dictionary:
 	if runner != null:
+		if runner.timeout_triggered:
+			runner.halt()
+			return _fail("lua.error.runtime.timeout_loop", "")
 		runner.halt()
 	manual_override = false
 	return _fail_from_raw(raw)

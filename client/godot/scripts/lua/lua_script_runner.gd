@@ -11,6 +11,10 @@ var sandbox: LuaSandbox = LuaSandbox.new()
 var bridge: LuaApiBridge = null
 var enabled: bool = false
 var challenge_mode: bool = false
+var script_tick_count: int = 0
+var timeout_triggered: bool = false
+
+const MAX_SCRIPT_TICKS := 500
 
 
 func setup(world, entity_id: StringName = &"player", tutorial_unlock_all: bool = true) -> void:
@@ -54,6 +58,11 @@ func _resolve_allowed_apis() -> Array[String]:
 	return allowed
 
 
+func reset_runtime_limits() -> void:
+	script_tick_count = 0
+	timeout_triggered = false
+
+
 func halt() -> void:
 	## Stop inmediato: no más on_tick y vacía movimientos ya encolados.
 	enabled = false
@@ -67,11 +76,21 @@ func halt() -> void:
 func on_world_tick() -> void:
 	if not enabled or bridge == null:
 		return
+	script_tick_count += 1
+	if script_tick_count > MAX_SCRIPT_TICKS:
+		timeout_triggered = true
+		halt()
+		return
 	if bridge.has_pending_path():
 		bridge.consume_path_step()
 		return
+	bridge.begin_action_budget()
 	if not sandbox.call_on_tick():
 		enabled = false
+		return
+	if bridge.exceeded_action_budget():
+		timeout_triggered = true
+		halt()
 		return
 	if bridge.has_pending_path():
 		bridge.consume_path_step()

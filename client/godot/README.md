@@ -35,7 +35,7 @@ Requiere [lua-gdextension](https://github.com/gilzoide/lua-gdextension) (no va e
 .\scripts\setup_lua_gdextension.ps1
 ```
 
-En juego: **E** abre el editor (CodeEdit, Run/Stop, consola con keys i18n). Desplegable carga plantillas desde `data/mvp/quest_templates.json`. **Manual** = override si el script falla.
+En juego: **E** abre el editor (**Esc** o **Cerrar** para salir; la E del teclado no cierra mientras escribes). **Validar**/Run/Stop, consola con scroll. Plantillas en `quest_templates.json`.
 
 Debug: **M** recarga datos MVP.
 
