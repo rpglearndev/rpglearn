@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "wpn_rust_sword",
+      "display_name": "Espada oxidada",
+      "slot": "weapon",
+      "attack": 5,
+      "defense": 0,
+      "weight": 3,
+      "level_req": 1,
+      "sell_price": 8,
+      "class_hint": "warrior"
+    },
+    {
+      "id": "wpn_weak_staff",
+      "display_name": "Bastón viejo",
+      "slot": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "weight": 2,
+      "level_req": 1,
+      "sell_price": 6,
+      "class_hint": "mage"
+    },
+    {
+      "id": "wpn_short_bow",
+      "display_name": "Arco corto",
+      "slot": "weapon",
+      "attack": 4,
+      "defense": 0,
+      "weight": 2,
+      "level_req": 1,
+      "sell_price": 7,
+      "class_hint": "archer"
+    },
+    {
+      "id": "arm_cloth_tunic",
+      "display_name": "Túnica simple",
+      "slot": "armor",
+      "attack": 0,
+      "defense": 2,
+      "weight": 2,
+      "level_req": 1,
+      "sell_price": 5
+    },
+    {
+      "id": "shld_wood_round",
+      "display_name": "Escudo redondo",
+      "slot": "shield",
+      "attack": 0,
+      "defense": 3,
+      "weight": 3,
+      "level_req": 1,
+      "sell_price": 6,
+      "class_hint": "warrior"
+    },
+    {
+      "id": "helm_leather_cap",
+      "display_name": "Gorro de cuero",
+      "slot": "helmet",
+      "attack": 0,
+      "defense": 1,
+      "weight": 1,
+      "level_req": 1,
+      "sell_price": 4
+    },
+    {
+      "id": "boots_worn",
+      "display_name": "Botas gastadas",
+      "slot": "boots",
+      "attack": 0,
+      "defense": 1,
+      "weight": 1,
+      "level_req": 1,
+      "sell_price": 3
+    },
+    {
+      "id": "pot_hp_small",
+      "display_name": "Poción de vida",
+      "slot": "consumable",
+      "weight": 1,
+      "sell_price": 2,
+      "use_effect": "heal_hp",
+      "use_value": 25
+    },
+    {
+      "id": "pot_mp_small",
+      "display_name": "Poción de mana",
+      "slot": "consumable",
+      "weight": 1,
+      "sell_price": 2,
+      "use_effect": "heal_mp",
+      "use_value": 20
+    },
+    {
+      "id": "misc_scrap",
+      "display_name": "Chatarra",
+      "slot": "misc",
+      "weight": 1,
+      "sell_price": 3
+    },
+    {
+      "id": "misc_wolf_pelt",
+      "display_name": "Piel de lobo",
+      "slot": "misc",
+      "weight": 2,
+      "sell_price": 8
+    }
+  ]
+}

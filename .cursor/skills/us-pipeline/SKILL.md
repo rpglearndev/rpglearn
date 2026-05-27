@@ -52,10 +52,16 @@ Coordinar las fases 1→4 con subagentes o sesiones dedicadas; **no escribir có
 - Invocar skill **`us-approval`**: presentar resumen al usuario.
 - **No** cerrar issue ni marcar Done hasta mensaje explícito: `Aprobado US-XXX`.
 
-### Paso 6 — Tras aprobación
+### Paso 6 — Tras `Aprobado US-XXX` (skill `us-approval`)
 
-- `scripts/us_pipeline.ps1 approve US-XXX`
-- Commit final si queda pendiente; PR opcional según pida el usuario.
+Orden fijo:
+
+1. `05-approval.md`
+2. Commit + push rama `us/XXX-…`
+3. Merge a `master` + `git push origin master`
+4. **Después:** `scripts/us_pipeline.ps1 approve US-XXX` (Done + cerrar issue)
+
+No cerrar issue ni marcar Done antes del merge en `master`.
 
 ## Plantilla de estado (mensaje al usuario entre fases)
 

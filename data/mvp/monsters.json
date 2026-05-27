@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "monsters": [
+    {
+      "id": "mob_slime",
+      "display_name": "Babosa",
+      "hp": 18,
+      "attack": 4,
+      "defense": 0,
+      "xp": 12,
+      "gold": { "min": 1, "max": 4 },
+      "drops": [{ "item_id": "misc_scrap", "chance": 0.25 }]
+    },
+    {
+      "id": "mob_wolf",
+      "display_name": "Lobo",
+      "hp": 35,
+      "attack": 8,
+      "defense": 1,
+      "xp": 28,
+      "gold": { "min": 5, "max": 12 },
+      "drops": [{ "item_id": "misc_wolf_pelt", "chance": 0.2 }]
+    },
+    {
+      "id": "mob_bandit",
+      "display_name": "Bandido",
+      "hp": 55,
+      "attack": 12,
+      "defense": 3,
+      "xp": 45,
+      "gold": { "min": 10, "max": 22 },
+      "drops": [
+        { "item_id": "misc_scrap", "chance": 0.15 },
+        { "item_id": "wpn_rust_sword", "chance": 0.05 }
+      ]
+    }
+  ]
+}

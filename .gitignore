@@ -3,6 +3,7 @@
 .import/
 *.import
 client/godot/assets/mixel
+client/godot/data/mvp
 export/
 export_presets.cfg
 *.translation

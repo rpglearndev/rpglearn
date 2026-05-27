@@ -8,11 +8,12 @@ func _initialize() -> void:
 	total_failures += _run_suite("res://tests/unit/test_manual_tick_input.gd", "ManualTickInput")
 	total_failures += _run_suite("res://tests/unit/test_world_zone_map.gd", "WorldZoneMap")
 	total_failures += _run_suite("res://tests/unit/test_world_01_tileset_factory.gd", "World01Tileset")
+	total_failures += _run_suite("res://tests/unit/test_mvp_data_loader.gd", "MvpData")
 	if total_failures > 0:
 		push_error("%d test assertion(s) failed (all suites)" % total_failures)
 		quit(1)
 	else:
-		print("All tests passed (TickWorld + ManualTickInput + World01).")
+		print("All tests passed (TickWorld + ManualTickInput + World01 + MvpData).")
 		quit(0)
 
 

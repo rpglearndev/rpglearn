@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "shops": [
+    {
+      "id": "shop_riverton_trader",
+      "npc_id": "npc_riverton_trader",
+      "zone": "riverton",
+      "buy": [
+        { "item_id": "pot_hp_small", "price": 12 },
+        { "item_id": "pot_mp_small", "price": 10 }
+      ],
+      "sell_item_ids": [
+        "misc_scrap",
+        "misc_wolf_pelt",
+        "wpn_rust_sword",
+        "wpn_weak_staff",
+        "wpn_short_bow",
+        "arm_cloth_tunic",
+        "shld_wood_round",
+        "helm_leather_cap",
+        "boots_worn",
+        "pot_hp_small",
+        "pot_mp_small"
+      ]
+    }
+  ]
+}

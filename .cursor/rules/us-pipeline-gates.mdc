@@ -28,4 +28,4 @@ Si el usuario pide **implementar / codificar US-XXX**, leer `.cursor/skills/us-p
 ## Board GitHub
 
 - Al iniciar US: Status **In Progress** (script `scripts/us_pipeline.ps1 start US-XXX`).
-- Tras aprobación humana: **Done** + cerrar issue (`scripts/us_pipeline.ps1 approve US-XXX`).
+- Tras `Aprobado US-XXX`: primero **commit + push + merge a `master`**, luego **Done** + cerrar issue (`scripts/us_pipeline.ps1 approve US-XXX`). Nunca `approve` antes del merge en `master`.

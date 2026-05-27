@@ -87,13 +87,27 @@ func _refresh_hud() -> void:
 	var cell: Vector2i = world.get_entity_position(&"player")
 	var zone_id: int = _zone_map.get_zone(cell)
 	var practice := "sí" if _zone_map.is_practice_area(cell) else "no"
+	var data_line := _mvp_data_hud_line()
 	_hud.text = (
-		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\nWASD + joystick"
-		% [world.tick_index, cell.x, cell.y, _WorldZone.id_to_string(zone_id), practice]
+		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\n%s\nWASD + joystick"
+		% [world.tick_index, cell.x, cell.y, _WorldZone.id_to_string(zone_id), practice, data_line]
 	)
 
 
+func _mvp_data_hud_line() -> String:
+	if not MvpData.is_loaded():
+		return "MVP data: no cargado (link_mvp_data.ps1)"
+	var s = MvpData.store
+	return "MVP data: %d mobs, %d items, %d quests" % [s.monsters.size(), s.items.size(), s.quests.size()]
+
+
 func _unhandled_key_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if OS.is_debug_build() and event.keycode == KEY_F9:
+			if MvpData.reload():
+				_refresh_hud()
+			get_viewport().set_input_as_handled()
+			return
 	if _manual_input.handle_key_event(world, &"player", event):
 		get_viewport().set_input_as_handled()
 

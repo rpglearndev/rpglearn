@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "map_id": "world_01",
+  "spawns": [
+    { "mob_id": "mob_slime", "cell": { "x": 14, "y": 16 }, "zone": "greenfield" },
+    { "mob_id": "mob_slime", "cell": { "x": 16, "y": 18 }, "zone": "greenfield" },
+    { "mob_id": "mob_wolf", "cell": { "x": 36, "y": 14 }, "zone": "outskirts" },
+    { "mob_id": "mob_wolf", "cell": { "x": 40, "y": 16 }, "zone": "outskirts" },
+    { "mob_id": "mob_bandit", "cell": { "x": 24, "y": 11 }, "zone": "riverton" }
+  ]
+}

@@ -27,6 +27,11 @@ Salida esperada: `All tests passed (TickWorld + ManualTickInput).`
 | `scenes/world/world_01.tscn` | **Main** — mapa World_01 (US-012) + movimiento |
 | `scenes/debug/tick_debug.tscn` | Solo motor de ticks (US-010) |
 
+## Datos MVP (US-090)
+
+- JSON en `data/mvp/` (repo) → `res://data/mvp/` vía `scripts/link_mvp_data.ps1`.
+- Autoload **MvpData** carga al arranque; **F9** recarga en debug.
+
 ## World_01 (US-012)
 
 - TileMap 32×32 Mixel: **autotile** césped/camino (Godot Terrain), ruinas, rocas, decoración y sprite del personaje (`res://assets/mixel/` vía `scripts/link_mixel_assets.ps1`).

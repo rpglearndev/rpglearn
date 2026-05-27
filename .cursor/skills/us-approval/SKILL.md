@@ -43,15 +43,25 @@ El orquestador actúa como **facilitador**; **tú (el usuario)** eres el decisor
 ---
 
 **Responde una de:**
-- `Aprobado US-XXX` — cierro issue y muevo a Done en el board
+- `Aprobado US-XXX` — commit, push, merge a `master` y luego cierro issue / Done
 - `Rechaza US-XXX` — indica fase (implement/review/e2e) y motivo
 ```
 
 ## Si `Aprobado US-XXX`
 
+Orden **obligatorio** (no invertir pasos 2–4 y 5):
+
 1. Escribir `05-approval.md` con fecha, frase del usuario, resumen.
-2. Ejecutar `scripts/us_pipeline.ps1 approve US-XXX`.
-3. Confirmar issue cerrada y card en **Done**.
+2. **Git — integrar código** (ejecutar tú, no pedir al usuario):
+   - `git status` / `git diff` — revisar cambios pendientes.
+   - `git add` + `git commit` en la rama `us/XXX-…` si hay cambios sin commitear.
+   - `git push -u origin HEAD` (rama de la US).
+   - `git checkout master` → `git pull origin master`.
+   - `git merge us/XXX-…` (fast-forward o merge commit según historial).
+   - `git push origin master`.
+3. **Board — solo después del push a master:**
+   - `scripts/us_pipeline.ps1 approve US-XXX`.
+4. Confirmar issue cerrada y card en **Done**; indicar commit/merge en el mensaje al usuario.
 
 ## Si `Rechaza US-XXX`
 
@@ -62,4 +72,5 @@ El orquestador actúa como **facilitador**; **tú (el usuario)** eres el decisor
 ## Prohibido
 
 - Asumir aprobación por silencio o por "parece bien".
-- Hacer merge/push a master sin que el usuario lo pida en reglas de git del proyecto.
+- Ejecutar `approve US-XXX` (cerrar issue / Done) **antes** de commit + push + merge a `master`.
+- Cerrar issue sin que el código de la US esté en `origin/master`.

@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "quests": [
+    {
+      "id": "quest_welcome_manual",
+      "title_key": "quest.welcome_manual.title",
+      "mode": "manual",
+      "order": 1,
+      "api_unlock": []
+    },
+    {
+      "id": "quest_variables_state",
+      "title_key": "quest.variables_state.title",
+      "mode": "script",
+      "order": 2,
+      "api_unlock": ["getTick", "getPosition", "getHp", "getMana"]
+    },
+    {
+      "id": "quest_if_safe_or_heal",
+      "title_key": "quest.if_safe_or_heal.title",
+      "mode": "script",
+      "order": 3,
+      "api_unlock": ["move", "usePotion"]
+    },
+    {
+      "id": "quest_loop_patrol",
+      "title_key": "quest.loop_patrol.title",
+      "mode": "script",
+      "order": 4,
+      "api_unlock": ["move"]
+    },
+    {
+      "id": "quest_function_move_to_flag",
+      "title_key": "quest.function_move_to_flag.title",
+      "mode": "script",
+      "order": 5,
+      "api_unlock": ["moveTo", "isTileWalkable"]
+    },
+    {
+      "id": "quest_inventory_caps",
+      "title_key": "quest.inventory_caps.title",
+      "mode": "script",
+      "order": 6,
+      "api_unlock": ["getInventory", "getCapacity", "getCarryWeight"]
+    },
+    {
+      "id": "quest_kite_wolf",
+      "title_key": "quest.kite_wolf.title",
+      "mode": "script",
+      "order": 7,
+      "api_unlock": ["setDesiredRange"]
+    },
+    {
+      "id": "quest_use_potions",
+      "title_key": "quest.use_potions.title",
+      "mode": "script",
+      "order": 8,
+      "api_unlock": ["usePotion"]
+    },
+    {
+      "id": "quest_shop_loop",
+      "title_key": "quest.shop_loop.title",
+      "mode": "script",
+      "order": 9,
+      "api_unlock": ["buy", "sell"]
+    },
+    {
+      "id": "quest_bandit_mini",
+      "title_key": "quest.bandit_mini.title",
+      "mode": "script",
+      "order": 10,
+      "api_unlock": ["equip", "unequip"]
+    }
+  ]
+}
