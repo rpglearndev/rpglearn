@@ -79,11 +79,11 @@ $labelMap = @{
 $content = Get-Content $backlogPath -Raw -Encoding UTF8
 # Title line may use em dash, hyphen, or mojibake; body ends at next --- or Epic header
 $pattern = '(?ms)^#### (US-\d+)\s+.+?\r?\n(.*?)(?=^---\r?\n|^### Epic |^### Orden |\z)'
-$matches = [regex]::Matches($content, $pattern)
+$storyMatches = [regex]::Matches($content, $pattern)
 
-Write-Host "Found $($matches.Count) user stories in backlog.md"
+Write-Host "Found $($storyMatches.Count) user stories in backlog.md"
 
-foreach ($m in $matches) {
+foreach ($m in $storyMatches) {
     $idFull = $m.Groups[1].Value
     $id = $idFull -replace 'US-', ''
     $body = $m.Groups[2].Value.Trim()
