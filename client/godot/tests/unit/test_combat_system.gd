@@ -11,6 +11,7 @@ var _failures: int = 0
 
 func run() -> int:
 	_test_melee_range_adjacent_only()
+	_test_melee_hits_diagonal_tile()
 	_test_ranged_desired_range()
 	_test_kill_grants_xp_and_gold()
 	_test_cooldown_after_attack()
@@ -51,6 +52,16 @@ func _test_melee_range_adjacent_only() -> void:
 	_assert_true(not combat.can_attack(&"player", &"mob_0"), "too far for melee")
 	world.set_entity_position(&"mob_0", Vector2i(6, 5))
 	_assert_true(combat.can_attack(&"player", &"mob_0"), "adjacent melee ok")
+
+
+func _test_melee_hits_diagonal_tile() -> void:
+	var ctx := _make_world_with_combat()
+	var world: TickWorld = ctx["world"]
+	var combat: CombatSystem = ctx["combat"]
+	world.set_entity_position(&"player", Vector2i(15, 17))
+	combat.register_monster(&"mob_0", "mob_slime")
+	world.set_entity_position(&"mob_0", Vector2i(16, 18))
+	_assert_true(combat.can_attack(&"player", &"mob_0"), "diagonal adjacent counts as melee range 1")
 
 
 func _test_ranged_desired_range() -> void:

@@ -8,7 +8,7 @@ const MvpDataStore := preload("res://scripts/data/mvp_data_store.gd")
 const BASE_READS: Array[String] = [
 	"getTick", "getPosition", "getHp", "getMana", "getMaxHp", "getMaxMana",
 	"getLevel", "getClass", "getSkills", "getCapacity", "getCarryWeight",
-	"getInventory", "nearestEnemy", "nearestLoot", "isTileWalkable", "distanceTo",
+	"getInventory", "nearestEnemy", "nearestAttackable", "nearestLoot", "isTileWalkable", "distanceTo",
 ]
 
 const BASE_ACTIONS: Array[String] = ["move", "moveTo", "attack"]
@@ -16,7 +16,7 @@ const BASE_ACTIONS: Array[String] = ["move", "moveTo", "attack"]
 const ALL_KNOWN: Array[String] = [
 	"getTick", "getPosition", "getHp", "getMana", "getMaxHp", "getMaxMana",
 	"getLevel", "getClass", "getSkills", "getCapacity", "getCarryWeight",
-	"getInventory", "nearestEnemy", "nearestLoot", "isTileWalkable", "distanceTo",
+	"getInventory", "nearestEnemy", "nearestAttackable", "nearestLoot", "isTileWalkable", "distanceTo",
 	"move", "moveTo", "attack", "usePotion", "loot", "equip", "unequip",
 	"buy", "sell", "setDesiredRange", "game_random", "game_random_int",
 ]

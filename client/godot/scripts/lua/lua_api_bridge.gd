@@ -83,6 +83,8 @@ func _make_callable(name: String) -> Callable:
 			return Callable(self, "_stub_number").bind(name)
 		"nearestEnemy":
 			return Callable(self, "_nearest_enemy")
+		"nearestAttackable":
+			return Callable(self, "_nearest_attackable")
 		"nearestLoot":
 			return Callable(self, "_stub_nil")
 		"isTileWalkable":
@@ -174,6 +176,15 @@ func _nearest_enemy(max_range: int) -> Variant:
 	if combat == null:
 		return null
 	var id: StringName = combat.nearest_enemy(entity_id, max_range)
+	if id == &"":
+		return null
+	return str(id)
+
+
+func _nearest_attackable() -> Variant:
+	if combat == null:
+		return null
+	var id: StringName = combat.nearest_attackable_enemy(entity_id)
 	if id == &"":
 		return null
 	return str(id)

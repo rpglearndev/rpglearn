@@ -99,10 +99,11 @@ func get_player_gold() -> int:
 	return _player_gold
 
 
-func manhattan_distance(a: StringName, b: StringName) -> int:
+func tile_distance(a: StringName, b: StringName) -> int:
+	## Chebyshev (incluye diagonal): 1 = casilla vecina en 8 direcciones.
 	var pa: Vector2i = _world.get_entity_position(a)
 	var pb: Vector2i = _world.get_entity_position(b)
-	return absi(pa.x - pb.x) + absi(pa.y - pb.y)
+	return maxi(absi(pa.x - pb.x), absi(pa.y - pb.y))
 
 
 func attack_range_for(attacker_id: StringName) -> int:
@@ -130,8 +131,8 @@ func can_attack(attacker_id: StringName, target_id: StringName) -> bool:
 		return false
 	if attacker.cooldown_ticks > 0:
 		return false
-	var dist := manhattan_distance(attacker_id, target_id)
-	return dist <= attack_range_for(attacker_id) and dist >= 1
+	var dist := tile_distance(attacker_id, target_id)
+	return dist >= 1 and dist <= attack_range_for(attacker_id)
 
 
 func nearest_enemy(from_id: StringName, max_range: int) -> StringName:
@@ -144,8 +145,21 @@ func nearest_enemy(from_id: StringName, max_range: int) -> StringName:
 		var from_ec: EntityCombat = _entities[from_id]
 		if from_ec != null and from_ec.is_player == ec.is_player:
 			continue
-		var dist := manhattan_distance(from_id, key)
+		var dist := tile_distance(from_id, key)
 		if dist <= max_range and dist < best_dist:
+			best_dist = dist
+			best_id = key
+	return best_id
+
+
+func nearest_attackable_enemy(from_id: StringName) -> StringName:
+	var best_id := StringName()
+	var best_dist := 999
+	for key in _entities:
+		if not can_attack(from_id, key):
+			continue
+		var dist := tile_distance(from_id, key)
+		if dist < best_dist:
 			best_dist = dist
 			best_id = key
 	return best_id

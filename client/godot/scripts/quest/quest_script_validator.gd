@@ -70,7 +70,7 @@ static func _has_custom_function_call(src: String) -> bool:
 	var builtins := [
 		"getTick", "getPosition", "getHp", "getMana", "getMaxHp", "getMaxMana",
 		"getLevel", "getClass", "getSkills", "getCapacity", "getCarryWeight",
-		"getInventory", "nearestEnemy", "nearestLoot", "isTileWalkable", "distanceTo",
+		"getInventory", "nearestEnemy", "nearestAttackable", "nearestLoot", "isTileWalkable", "distanceTo",
 		"move", "moveTo", "attack", "usePotion", "loot", "equip", "unequip",
 		"buy", "sell", "setDesiredRange", "print", "type", "pairs", "ipairs",
 		"on_tick", "tonumber", "tostring",
