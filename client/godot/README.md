@@ -8,9 +8,7 @@
 
 Importa esta carpeta (`client/godot`) en el editor Godot.
 
-## Tests (US-010)
-
-Desde la raíz del repo, con `godot` en el PATH:
+## Tests (US-010 + US-011)
 
 Desde la raíz del repo:
 
@@ -20,11 +18,20 @@ Desde la raíz del repo:
 
 Detecta automáticamente `C:\Program Files\Godot\Godot*.exe` o usa `GODOT_PATH`.
 
+Salida esperada: `All tests passed (TickWorld + ManualTickInput).`
+
 ## Escena debug
 
-`scenes/debug/tick_debug.tscn` — muestra tick index y encola movimientos con WASD.
+`scenes/debug/tick_debug.tscn` — ticks + **WASD** + **joystick** (abajo-izquierda, ratón o touch).
 
-## Core
+## Joystick (US-011)
+
+- Nodo **VirtualJoystick** en la escena debug; script `scripts/input/virtual_joystick_control.gd`.
+- Ratón: clic y arrastra en el círculo; suelta para parar (vacía la cola como soltar tecla).
+- Dirección llega a `ManualTickInput.set_joystick_cardinal()` (prioridad sobre cola tipo bot).
+
+## Core / input
 
 - `scripts/core/tick_world.gd` — simulación por ticks (10 TPS por defecto)
-- `scripts/core/tick_world_runner.gd` — dispara ticks desde tiempo real sin usar delta en reglas
+- `scripts/core/tick_world_runner.gd` — dispara ticks desde tiempo real (sin delta en reglas)
+- `scripts/input/manual_tick_input.gd` — teclado + joystick vía `joystick_cardinal` / `set_joystick_cardinal`

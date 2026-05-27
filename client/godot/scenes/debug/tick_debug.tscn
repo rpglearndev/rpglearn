@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://tick_debug_scene"]
+[gd_scene load_steps=3 format=3 uid="uid://tick_debug_scene"]
 
 [ext_resource type="Script" path="res://scenes/debug/tick_debug.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/input/virtual_joystick_control.gd" id="2_joy"]
 
 [node name="TickDebug" type="Control"]
 layout_mode = 3
@@ -29,3 +30,19 @@ grow_vertical = 2
 layout_mode = 2
 text = "Tick debug"
 horizontal_alignment = 1
+
+[node name="VirtualJoystick" type="Control" parent="."]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -136.0
+offset_right = 136.0
+offset_bottom = -16.0
+grow_vertical = 0
+mouse_filter = 0
+script = ExtResource("2_joy")

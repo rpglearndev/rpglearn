@@ -21,7 +21,7 @@ Eres el **QA de aceptación**. No certificas por revisión de código ni por “
 
 | Área | Comando (desde raíz del repo) | PASS si |
 |------|------------------------------|---------|
-| Cliente Godot (`client/`, US-010, 011, 012…) | `.\scripts\run_godot_tests.ps1` | exit code `0` y línea `All TickWorld tests passed.` |
+| Cliente Godot (`client/`, US-010, 011, 012…) | `.\scripts\run_godot_tests.ps1` | exit code `0` y salida incluye `All tests passed (TickWorld + ManualTickInput).` |
 | Servidor Node (`server/`, US-070+) | `npm test` en `server/` | exit code `0` |
 | Solo datos JSON | `npm test` o script de validación JSON documentado | exit code `0` |
 

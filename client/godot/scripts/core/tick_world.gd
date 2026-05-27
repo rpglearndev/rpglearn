@@ -46,6 +46,11 @@ func pending_action_count() -> int:
 	return _action_queue.size()
 
 
+func clear_action_queue() -> void:
+	## Vacía la cola (p. ej. input manual con prioridad sobre script/bot).
+	_action_queue.clear()
+
+
 func step() -> void:
 	tick_index += 1
 	if _action_queue.is_empty():
