@@ -43,7 +43,9 @@ Coordinar las fases 1→4 con subagentes o sesiones dedicadas; **no escribir có
 ### Paso 4 — E2E Tester
 
 - Invocar skill **`us-e2e`**.
-- **Salida:** `04-e2e.md` con checklist de criterios (pass/fail por ítem).
+- **Ejecutar** en terminal (no delegar al usuario): `.\scripts\run_godot_tests.ps1` si la US toca `client/godot`.
+- **Salida:** `04-e2e.md` con **exit code**, **salida pegada** y veredicto PASS solo si exit 0.
+- Si el comando no se ejecutó o falló por entorno → **BLOCKED**; no pasar a aprobación humana.
 
 ### Paso 5 — Aprobación humana (STOP)
 

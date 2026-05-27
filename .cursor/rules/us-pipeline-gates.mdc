@@ -21,7 +21,9 @@ Si el usuario pide **implementar / codificar US-XXX**, leer `.cursor/skills/us-p
 - Crear/actualizar artefactos en `.cursor/pipeline/US-XXX/`.
 - TDD en fase Implement: test que falle → implementación → verde.
 - Si Review marca **Critical**, volver a Implement antes de Refactor.
-- Tras E2E, **parar** y pedir visto bueno humano usando plantilla de `us-approval`.
+- **E2E:** ejecutar `.\scripts\run_godot_tests.ps1` (cliente) o `npm test` (servidor); pegar salida y exit code en `04-e2e.md`. Sin ejecución → veredicto **FAIL** o **BLOCKED**, nunca PASS.
+- No pedir aprobación humana si `04-e2e.md` dice FAIL/BLOCKED o no incluye salida de comando.
+- Tras E2E **PASS con evidencia**, **parar** y pedir visto bueno humano (`us-approval`).
 
 ## Board GitHub
 
