@@ -20,8 +20,10 @@ docs/           # plan.md, backlog.md
 
 ## Cliente (Godot)
 
-1. Instala [Godot 4.x](https://godotengine.org/).
-2. Importa el proyecto en `client/godot/` (cuando exista `project.godot`).
+1. Instala [Godot 4.3+](https://godotengine.org/).
+2. Importa `client/godot/` en el editor.
+3. Tests del tick engine: `.\scripts\run_godot_tests.ps1` (o define `GODOT_PATH`).
+4. Escena debug: `scenes/debug/tick_debug.tscn`.
 
 ## Servidor (futuro)
 
