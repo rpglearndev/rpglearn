@@ -3,25 +3,27 @@ extends RefCounted
 ## Sprites de mobs en el mapa (US-020 visibilidad; arte final US-021).
 
 const MixelSpriteLoader := preload("res://scripts/world/mixel_sprite_loader.gd")
+const CombatSystem := preload("res://scripts/combat/combat_system.gd")
+const TickWorld := preload("res://scripts/core/tick_world.gd")
 
 var _sprites: Dictionary = {}
 
 
-func build(parent: Node2D, world, combat, tile_size: int) -> void:
+func build(parent: Node2D, world: TickWorld, combat: CombatSystem, tile_size: int) -> void:
 	clear(parent)
 	if combat == null:
 		return
 	for entity_id: StringName in combat.list_mob_entity_ids():
-		var sprite := Sprite2D.new()
+		var sprite: Sprite2D = Sprite2D.new()
 		sprite.name = str(entity_id)
-		var mob_id := combat.get_mob_id(entity_id)
+		var mob_id: String = combat.get_mob_id(entity_id)
 		sprite.texture = MixelSpriteLoader.mob_placeholder(mob_id)
 		parent.add_child(sprite)
 		_sprites[entity_id] = sprite
 	sync(world, combat, tile_size)
 
 
-func sync(world, combat, tile_size: int) -> void:
+func sync(world: TickWorld, combat: CombatSystem, tile_size: int) -> void:
 	if combat == null:
 		return
 	for entity_id: StringName in _sprites:
