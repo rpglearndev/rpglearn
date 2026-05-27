@@ -20,9 +20,20 @@ Detecta automáticamente `C:\Program Files\Godot\Godot*.exe` o usa `GODOT_PATH`.
 
 Salida esperada: `All tests passed (TickWorld + ManualTickInput).`
 
-## Escena debug
+## Escenas
 
-`scenes/debug/tick_debug.tscn` — ticks + **WASD** + **joystick** (abajo-izquierda, ratón o touch).
+| Escena | Uso |
+|--------|-----|
+| `scenes/world/world_01.tscn` | **Main** — mapa World_01 (US-012) + movimiento |
+| `scenes/debug/tick_debug.tscn` | Solo motor de ticks (US-010) |
+
+## World_01 (US-012)
+
+- TileMap 32×32 Mixel: **autotile** césped/camino (Godot Terrain), ruinas, rocas, decoración y sprite del personaje (`res://assets/mixel/` vía `scripts/link_mixel_assets.ps1`).
+- Zonas: **greenfield**, **riverton**, **outskirts** (HUD).
+- Área de práctica acotada (vallas) en Greenfield.
+- Capa `Entities` con **y_sort**.
+- **Camera2D** sigue al jugador (mapa 48×28 tiles; la ventana no muestra todo el mundo).
 
 ## Joystick (US-011)
 

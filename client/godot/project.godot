@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="RPG Learn"
 config/description="Learn-to-code RPG — tick-based deterministic simulation"
-run/main_scene="res://scenes/debug/tick_debug.tscn"
+run/main_scene="res://scenes/world/world_01.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 
 [display]

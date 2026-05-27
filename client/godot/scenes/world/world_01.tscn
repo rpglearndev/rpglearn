@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://world_01_scene"]
+
+[ext_resource type="Script" path="res://scenes/world/world_01.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/input/virtual_joystick_control.gd" id="2_joy"]
+
+[node name="World01" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Ground" type="TileMapLayer" parent="."]
+
+[node name="Decor" type="TileMapLayer" parent="."]
+z_index = 1
+
+[node name="Entities" type="Node2D" parent="."]
+z_index = 2
+y_sort_enabled = true
+
+[node name="Player" type="Sprite2D" parent="Entities"]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="InfoLabel" type="Label" parent="HUD"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 900.0
+offset_bottom = 80.0
+text = "World_01"
+
+[node name="VirtualJoystick" type="Control" parent="HUD"]
+custom_minimum_size = Vector2(120, 120)
+anchors_preset = 3
+anchor_left = 0.0
+anchor_top = 1.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -136.0
+offset_right = 136.0
+offset_bottom = -16.0
+grow_vertical = 0
+script = ExtResource("2_joy")

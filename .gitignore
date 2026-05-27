@@ -1,6 +1,8 @@
 # Godot
 .godot/
 .import/
+*.import
+client/godot/assets/mixel
 export/
 export_presets.cfg
 *.translation

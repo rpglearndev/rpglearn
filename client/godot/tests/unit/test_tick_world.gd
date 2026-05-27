@@ -17,6 +17,7 @@ func run() -> int:
 	_test_empty_tick_advances_index_without_move()
 	_test_one_major_action_per_tick()
 	_test_clear_action_queue()
+	_test_map_bounds_block_move()
 	return _failures
 
 
@@ -102,6 +103,16 @@ func _test_one_major_action_per_tick() -> void:
 	world.step()
 	_assert_eq(world.get_entity_position(&"player"), Vector2i(2, 0), "second action in tick 2")
 	_assert_eq(world.pending_action_count(), 0, "queue drained")
+
+
+func _test_map_bounds_block_move() -> void:
+	var grid := GridWalkability.new()
+	grid.set_map_bounds(Rect2i(0, 0, 3, 3))
+	var world := TickWorld.new(grid)
+	world.set_entity_position(&"player", Vector2i(2, 0))
+	world.enqueue_action(GameAction.move(&"player", Vector2i.RIGHT))
+	world.step()
+	_assert_eq(world.get_entity_position(&"player"), Vector2i(2, 0), "cannot leave map east")
 
 
 func _test_clear_action_queue() -> void:
