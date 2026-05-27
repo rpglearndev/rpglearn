@@ -10,4 +10,6 @@ Validador didáctico por misión (quests 2–5): checks estáticos, mensajes i18
 
 ## Integración git
 
-Pendiente en este paso: commit → push rama → merge `master` → `us_pipeline.ps1 approve US-032`.
+- Commit: `cf56bc9` en `us/032-quest-validator`
+- Merge: fast-forward a `origin/master`
+- Issue #12 cerrada vía `us_pipeline.ps1 approve US-032`
