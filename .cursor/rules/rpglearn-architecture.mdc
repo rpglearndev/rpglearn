@@ -1,0 +1,36 @@
+---
+description: Arquitectura rpglearn — Godot cliente, ticks 10 TPS, Lua sandbox, Node servidor
+alwaysApply: true
+---
+
+# Arquitectura rpglearn
+
+## Capas
+
+- `client/godot/` — presentación + lógica de juego (GDScript). Sin reglas de negocio duplicadas en servidor para MVP offline.
+- `server/` — API + sim-worker (TypeScript, Fase 2). Simulación autoritativa para rankings.
+- `data/mvp/` — JSON de balance; el código **lee** datos, no hardcodea stats.
+
+## Motor de ticks (obligatorio)
+
+- **10 TPS** (100 ms). La lógica de juego no depende de `delta` real.
+- Movimiento **discreto**: 1 tile = 1 tick si walkable.
+- **Máx. 1 acción mayor por tick** (move, attack, loot, buy/sell, use item).
+- Determinismo: misma secuencia de inputs → mismo estado (tests obligatorios).
+
+## Lua (jugador)
+
+- Sandbox: whitelist API; sin `os`, `io`, red.
+- `moveTo` con A*; RNG solo vía API con seed fija en retos.
+
+## Código
+
+- **SRP**, funciones cortas, nombres que revelan intención.
+- GDScript: tipado estático donde Godot 4 lo permita; `@tool` solo si hace falta.
+- Sin abstracciones prematuras; reutilizar patrones ya presentes en el repo.
+- Comentarios solo para invariantes no obvios (ticks, determinismo, anti-cheat).
+
+## Tests
+
+- Unitarios: lógica pura (tick world, fórmulas, pathfinding).
+- Integración/E2E: escenas Godot o GUT; evidencia en reporte de pipeline.

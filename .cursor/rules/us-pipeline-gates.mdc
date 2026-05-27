@@ -1,0 +1,29 @@
+---
+description: Gates del pipeline US — no implementar fuera de fase ni cerrar sin aprobación humana
+alwaysApply: true
+---
+
+# Pipeline US — gates
+
+## Disparador
+
+Si el usuario pide **implementar / codificar US-XXX**, leer `.cursor/skills/us-pipeline/SKILL.md` y ejecutar **todas** las fases en orden.
+
+## Prohibido
+
+- Saltar Review, Refactor o E2E para "ir más rápido".
+- Cerrar issue o marcar Done en GitHub sin `Aprobado US-XXX` del usuario.
+- Mezclar dos US en un mismo branch/commit sin pedirlo explícitamente.
+- Refactor que cambie comportamiento observable (eso es Implement, no Refactor).
+
+## Obligatorio
+
+- Crear/actualizar artefactos en `.cursor/pipeline/US-XXX/`.
+- TDD en fase Implement: test que falle → implementación → verde.
+- Si Review marca **Critical**, volver a Implement antes de Refactor.
+- Tras E2E, **parar** y pedir visto bueno humano usando plantilla de `us-approval`.
+
+## Board GitHub
+
+- Al iniciar US: Status **In Progress** (script `scripts/us_pipeline.ps1 start US-XXX`).
+- Tras aprobación humana: **Done** + cerrar issue (`scripts/us_pipeline.ps1 approve US-XXX`).

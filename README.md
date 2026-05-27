@@ -6,6 +6,7 @@ RPG 2D single-player donde aprendes a programar en **Lua** para automatizar tu p
 
 - [Plan de diseño](docs/plan.md)
 - [Backlog / User Stories](docs/backlog.md)
+- [Workflow pipeline por US (TDD → review → refactor → E2E → tu OK)](docs/workflow-us-pipeline.md)
 
 ## Estructura
 
@@ -29,6 +30,18 @@ cd server
 npm install
 npm run dev
 ```
+
+## Desarrollo por User Story
+
+Orden en Cursor:
+
+```
+Implementa US-010
+```
+
+Pipeline: **Implement (TDD)** → **Review** → **Refactor** → **E2E** → tu **`Aprobado US-010`**.
+
+Agentes y reglas en `.cursor/AGENTS.md` y `.cursor/skills/`.
 
 ## Organización GitHub
 
