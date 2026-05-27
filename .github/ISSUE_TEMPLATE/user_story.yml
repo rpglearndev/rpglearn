@@ -1,0 +1,48 @@
+name: User Story
+description: Historia de usuario (Como / quiero / para)
+title: "US-XXX: "
+labels:
+  - user-story
+body:
+  - type: input
+    id: epic
+    attributes:
+      label: Epic
+      description: "Ej. E01 — Motor de ticks"
+    validations:
+      required: true
+  - type: textarea
+    id: como_quiero_para
+    attributes:
+      label: Como / quiero / para
+      value: |
+        *Como* ...
+        *quiero* ...
+        *para* ...
+    validations:
+      required: true
+  - type: textarea
+    id: descripcion
+    attributes:
+      label: Descripción
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptación
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencias
+    attributes:
+      label: Dependencias
+      description: "Ej. US-010, US-001"
+  - type: textarea
+    id: notas
+    attributes:
+      label: Notas
