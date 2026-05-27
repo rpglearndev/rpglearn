@@ -10,6 +10,7 @@ var _runner = null
 var _manual_input = null
 
 @onready var _label: Label = $VBox/InfoLabel
+@onready var _joystick: Control = $VirtualJoystick
 
 
 func _ready() -> void:
@@ -17,10 +18,16 @@ func _ready() -> void:
 	_manual_input = _ManualTickInput.new()
 	world.set_entity_position(&"player", Vector2i(10, 10))
 	world.tick_processed.connect(_on_tick_processed)
+	if _joystick.has_signal("cardinal_changed"):
+		_joystick.cardinal_changed.connect(_on_joystick_cardinal)
 	_runner = _TickWorldRunner.new()
 	_runner.world = world
 	add_child(_runner)
 	_refresh()
+
+
+func _on_joystick_cardinal(dir: Vector2i) -> void:
+	_manual_input.set_joystick_cardinal(world, &"player", dir)
 
 
 func _on_tick_processed(_tick_index: int) -> void:
@@ -30,7 +37,7 @@ func _on_tick_processed(_tick_index: int) -> void:
 
 func _refresh() -> void:
 	var pos: Vector2i = world.get_entity_position(&"player")
-	_label.text = "Tick: %d | TPS: %d | Player: (%d, %d)\nWASD = 1 tile (mantén = 1/tick)" % [
+	_label.text = "Tick: %d | TPS: %d | Player: (%d, %d)\nWASD = 1 tile (mantén = 1/tick)\nJoystick = abajo-izquierda (ratón/touch)" % [
 		world.tick_index,
 		world.ticks_per_second,
 		pos.x,
