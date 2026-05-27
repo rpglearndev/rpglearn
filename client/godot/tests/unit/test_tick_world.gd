@@ -1,6 +1,9 @@
 extends RefCounted
 ## Tests unitarios TickWorld (US-010). Ejecutar con run_tests.gd
 
+const TickWorld := preload("res://scripts/core/tick_world.gd")
+const GameAction := preload("res://scripts/core/game_action.gd")
+const GridWalkability := preload("res://scripts/core/grid_walkability.gd")
 
 var _failures: int = 0
 
@@ -63,7 +66,7 @@ func _test_blocked_tile_does_not_move() -> void:
 
 
 func _test_deterministic_replay() -> void:
-	var actions: Array[GameAction] = [
+	var actions: Array = [
 		GameAction.move(&"player", Vector2i.RIGHT),
 		GameAction.move(&"player", Vector2i.RIGHT),
 		GameAction.move(&"player", Vector2i.DOWN),
@@ -74,7 +77,7 @@ func _test_deterministic_replay() -> void:
 	_assert_eq(history_a, history_b, "same input sequence yields same positions")
 
 
-func _run_sequence(actions: Array[GameAction]) -> Array[Vector2i]:
+func _run_sequence(actions: Array) -> Array[Vector2i]:
 	var world := TickWorld.new()
 	world.set_entity_position(&"player", Vector2i(0, 0))
 	return world.replay_actions(actions)

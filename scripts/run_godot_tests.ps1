@@ -6,14 +6,16 @@ param(
 $project = (Resolve-Path (Join-Path $PSScriptRoot "..\client\godot")).Path
 
 if (-not $GodotExe) {
-    $candidates = @(
-        "${env:ProgramFiles}\Godot\Godot_v4.3-stable_win64.exe",
-        "${env:ProgramFiles}\Godot\Godot_v4.4-stable_win64.exe",
-        "${env:LOCALAPPDATA}\Godot\Godot*.exe"
-    )
-    foreach ($c in $candidates) {
-        $found = Get-Item $c -ErrorAction SilentlyContinue | Select-Object -First 1
-        if ($found) { $GodotExe = $found.FullName; break }
+    $godotDir = "${env:ProgramFiles}\Godot"
+    if (Test-Path $godotDir) {
+        $found = Get-ChildItem $godotDir -Filter "Godot*.exe" -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending | Select-Object -First 1
+        if ($found) { $GodotExe = $found.FullName }
+    }
+    if (-not $GodotExe) {
+        $found = Get-Item "${env:LOCALAPPDATA}\Godot\Godot*.exe" -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+        if ($found) { $GodotExe = $found.FullName }
     }
 }
 

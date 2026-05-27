@@ -10,10 +10,6 @@ config/description="Learn-to-code RPG — tick-based deterministic simulation"
 run/main_scene="res://scenes/debug/tick_debug.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 
-[autoload]
-
-GameTick="*res://scripts/autoload/game_tick.gd"
-
 [display]
 
 window/size/viewport_width=960

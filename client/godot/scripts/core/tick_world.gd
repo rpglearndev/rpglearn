@@ -2,6 +2,9 @@ class_name TickWorld
 extends RefCounted
 ## Simulación determinista por ticks. La lógica de juego no usa delta real.
 
+const _GameAction := preload("res://scripts/core/game_action.gd")
+const _GridWalkability := preload("res://scripts/core/grid_walkability.gd")
+
 
 const DEFAULT_TICKS_PER_SECOND := 10
 
@@ -17,13 +20,13 @@ var tick_duration_seconds: float:
 	get:
 		return 1.0 / float(ticks_per_second)
 
-var _action_queue: Array[GameAction] = []
+var _action_queue: Array = []
 var _entity_positions: Dictionary = {}
-var _walkability: GridWalkability = null
+var _walkability = null
 
 
-func _init(walkability: GridWalkability = null) -> void:
-	_walkability = walkability if walkability else GridWalkability.new()
+func _init(walkability = null) -> void:
+	_walkability = walkability if walkability else _GridWalkability.new()
 
 
 func set_entity_position(entity_id: StringName, cell: Vector2i) -> void:
@@ -34,8 +37,8 @@ func get_entity_position(entity_id: StringName) -> Vector2i:
 	return _entity_positions.get(entity_id, Vector2i.ZERO)
 
 
-func enqueue_action(action: GameAction) -> void:
-	assert(GameAction.is_major_type(action.type), "Only major actions can be enqueued")
+func enqueue_action(action) -> void:
+	assert(_GameAction.is_major_type(action.type), "Only major actions can be enqueued")
 	_action_queue.append(action)
 
 
@@ -48,7 +51,7 @@ func step() -> void:
 	if _action_queue.is_empty():
 		tick_processed.emit(tick_index)
 		return
-	var action: GameAction = _action_queue.pop_front()
+	var action = _action_queue.pop_front()
 	_process_major_action(action)
 	tick_processed.emit(tick_index)
 
@@ -58,7 +61,7 @@ func step_n(count: int) -> void:
 		step()
 
 
-func replay_actions(actions: Array[GameAction]) -> Array[Vector2i]:
+func replay_actions(actions: Array) -> Array[Vector2i]:
 	## Ejecuta acciones en orden (una por tick) y devuelve historial de posición del player.
 	var history: Array[Vector2i] = []
 	var player := &"player"
@@ -69,9 +72,9 @@ func replay_actions(actions: Array[GameAction]) -> Array[Vector2i]:
 	return history
 
 
-func _process_major_action(action: GameAction) -> void:
+func _process_major_action(action) -> void:
 	match action.type:
-		GameAction.Type.MOVE:
+		_GameAction.Type.MOVE:
 			_apply_move(action.entity_id, action.direction)
 		_:
 			push_warning("TickWorld: unimplemented action type %s" % action.type)

@@ -3,7 +3,12 @@ extends SceneTree
 
 
 func _initialize() -> void:
-	var suite := preload("res://tests/unit/test_tick_world.gd").new()
+	var suite_script: GDScript = preload("res://tests/unit/test_tick_world.gd")
+	if suite_script == null:
+		push_error("Failed to load test suite")
+		quit(1)
+		return
+	var suite = suite_script.new()
 	var failures: int = suite.run()
 	if failures > 0:
 		push_error("%d test assertion(s) failed" % failures)
