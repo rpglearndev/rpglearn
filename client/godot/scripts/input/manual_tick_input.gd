@@ -42,6 +42,13 @@ func on_tick_processed(world, entity_id: StringName) -> void:
 		world.enqueue_action(_GameAction.move(entity_id, dir))
 
 
+func clear_active(world, entity_id: StringName) -> void:
+	## Al activar script Lua: suelta teclado/joystick y vacía cola (prioridad script).
+	_keyboard_held = Vector2i.ZERO
+	joystick_cardinal = Vector2i.ZERO
+	world.clear_action_queue()
+
+
 func set_joystick_cardinal(world, entity_id: StringName, cardinal: Vector2i) -> void:
 	## UI del joystick: al cambiar dirección o soltar, prioridad manual (cola).
 	if cardinal == joystick_cardinal:

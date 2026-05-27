@@ -9,11 +9,15 @@ func _initialize() -> void:
 	total_failures += _run_suite("res://tests/unit/test_world_zone_map.gd", "WorldZoneMap")
 	total_failures += _run_suite("res://tests/unit/test_world_01_tileset_factory.gd", "World01Tileset")
 	total_failures += _run_suite("res://tests/unit/test_mvp_data_loader.gd", "MvpData")
+	total_failures += _run_suite("res://tests/unit/test_grid_pathfinder.gd", "GridPathfinder")
+	total_failures += _run_suite("res://tests/unit/test_lua_game_rng.gd", "LuaGameRng")
+	total_failures += _run_suite("res://tests/unit/test_lua_api_registry.gd", "LuaApiRegistry")
+	total_failures += _run_suite("res://tests/unit/test_lua_sandbox.gd", "LuaSandbox")
 	if total_failures > 0:
 		push_error("%d test assertion(s) failed (all suites)" % total_failures)
 		quit(1)
 	else:
-		print("All tests passed (TickWorld + ManualTickInput + World01 + MvpData).")
+		print("All tests passed (TickWorld + ManualTickInput + World01 + MvpData + Lua).")
 		quit(0)
 
 
@@ -22,11 +26,8 @@ func _run_suite(path: String, name: String) -> int:
 	if suite_script == null:
 		push_error("Failed to load suite: %s" % path)
 		return 1
-	if suite_script == null:
-		push_error("Suite failed to load: %s" % path)
-		return 1
 	var suite = suite_script.new()
-	if suite == null:
+	if suite == null or not suite.has_method("run"):
 		push_error("Suite failed to instantiate: %s" % path)
 		return 1
 	var failures: int = suite.run()

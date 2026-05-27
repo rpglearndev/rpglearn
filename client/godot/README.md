@@ -18,7 +18,7 @@ Desde la raíz del repo:
 
 Detecta automáticamente `C:\Program Files\Godot\Godot*.exe` o usa `GODOT_PATH`.
 
-Salida esperada: `All tests passed (TickWorld + ManualTickInput).`
+Salida esperada: `All tests passed (TickWorld + ManualTickInput + World01 + MvpData + Lua).`
 
 ## Escenas
 
@@ -26,6 +26,20 @@ Salida esperada: `All tests passed (TickWorld + ManualTickInput).`
 |--------|-----|
 | `scenes/world/world_01.tscn` | **Main** — mapa World_01 (US-012) + movimiento |
 | `scenes/debug/tick_debug.tscn` | Solo motor de ticks (US-010) |
+
+## Lua sandbox (US-030)
+
+Requiere [lua-gdextension](https://github.com/gilzoide/lua-gdextension) (no va en git):
+
+```powershell
+.\scripts\setup_lua_gdextension.ps1
+```
+
+En juego: tecla **L** activa el script demo (patrulla E/W). También **0** o **F10** (Fn+0 en portátiles sin teclas F). El HUD muestra `Lua: ON` o el motivo del fallo.
+
+Debug: **M** recarga datos MVP (antes F9).
+
+**Si no reacciona:** clic en la ventana del juego (foco), `setup_lua_gdextension.ps1`, reabrir proyecto en Godot.
 
 ## Datos MVP (US-090)
 

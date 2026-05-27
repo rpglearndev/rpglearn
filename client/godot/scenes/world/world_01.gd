@@ -8,6 +8,8 @@ const _World01MapBuilder := preload("res://scripts/world/world_01_map_builder.gd
 const _WorldZoneMap := preload("res://scripts/world/world_zone_map.gd")
 const _WorldZone := preload("res://scripts/world/world_zone.gd")
 const _MixelSpriteLoader := preload("res://scripts/world/mixel_sprite_loader.gd")
+const _LuaScriptRunner := preload("res://scripts/lua/lua_script_runner.gd")
+const _LuaSandbox := preload("res://scripts/lua/lua_sandbox.gd")
 
 const TILE_SIZE := 32
 
@@ -23,6 +25,8 @@ var world = null
 var _runner = null
 var _manual_input = null
 var _zone_map = null
+var _lua_runner = null
+var _lua_status: String = ""
 
 
 func _ready() -> void:
@@ -42,11 +46,18 @@ func _ready() -> void:
 	_sync_player_visual()
 	if _joystick.has_signal("cardinal_changed"):
 		_joystick.cardinal_changed.connect(_on_joystick_cardinal)
+	_lua_runner = _LuaScriptRunner.new()
+	_lua_runner.setup(world, &"player")
 	_refresh_hud()
 
 
 func _on_tick_processed(_tick_index: int) -> void:
-	_manual_input.on_tick_processed(world, &"player")
+	if _lua_runner != null and _lua_runner.enabled:
+		_lua_runner.on_world_tick()
+		if not _lua_runner.enabled:
+			_lua_status = "error: %s" % _lua_runner.get_last_lua_error()
+	else:
+		_manual_input.on_tick_processed(world, &"player")
 	_sync_player_visual()
 	_refresh_hud()
 
@@ -88,9 +99,14 @@ func _refresh_hud() -> void:
 	var zone_id: int = _zone_map.get_zone(cell)
 	var practice := "sí" if _zone_map.is_practice_area(cell) else "no"
 	var data_line := _mvp_data_hud_line()
+	var lua_line := "Lua: off"
+	if _lua_runner != null and _lua_runner.enabled:
+		lua_line = "Lua: ON"
+	elif not _lua_status.is_empty():
+		lua_line = "Lua: %s" % _lua_status
 	_hud.text = (
-		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\n%s\nWASD + joystick"
-		% [world.tick_index, cell.x, cell.y, _WorldZone.id_to_string(zone_id), practice, data_line]
+		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\n%s | %s\nWASD + joystick | L = Lua demo (también 0 / F10)"
+		% [world.tick_index, cell.x, cell.y, _WorldZone.id_to_string(zone_id), practice, data_line, lua_line]
 	)
 
 
@@ -101,19 +117,53 @@ func _mvp_data_hud_line() -> String:
 	return "MVP data: %d mobs, %d items, %d quests" % [s.monsters.size(), s.items.size(), s.quests.size()]
 
 
+func _process(_delta: float) -> void:
+	## InputMap: L / 0 / F10 (portátiles sin fila F suelen mandar 0 con Fn, no F10).
+	if Input.is_action_just_pressed("debug_lua_demo"):
+		_toggle_lua_demo()
+	elif OS.is_debug_build() and Input.is_action_just_pressed("debug_mvp_reload"):
+		if MvpData.reload():
+			_refresh_hud()
+
+
 func _unhandled_key_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		if OS.is_debug_build() and event.keycode == KEY_F9:
-			if MvpData.reload():
-				_refresh_hud()
-			get_viewport().set_input_as_handled()
-			return
 	if _manual_input.handle_key_event(world, &"player", event):
 		get_viewport().set_input_as_handled()
 
 
 func _on_joystick_cardinal(dir: Vector2i) -> void:
 	_manual_input.set_joystick_cardinal(world, &"player", dir)
+
+
+func _toggle_lua_demo() -> void:
+	if not _LuaSandbox.is_extension_available():
+		_lua_status = "extensión no instalada — ejecuta scripts/setup_lua_gdextension.ps1 y reabre el proyecto"
+		push_warning(_lua_status)
+		_refresh_hud()
+		return
+	if _lua_runner.enabled:
+		_lua_runner.enabled = false
+		_lua_status = "off"
+		_refresh_hud()
+		return
+	var src := """
+function on_tick()
+  local pos = getPosition()
+  if pos.x < 14 then
+    move("E")
+  elseif pos.x > 16 then
+    move("W")
+  end
+end
+"""
+	if _lua_runner.load_source(src):
+		_lua_runner.enabled = true
+		_manual_input.clear_active(world, &"player")
+		_lua_status = ""
+	else:
+		_lua_status = "error carga: %s" % _lua_runner.get_last_lua_error()
+		push_warning("Lua demo: %s" % _lua_status)
+	_refresh_hud()
 
 
 func _load_player_texture() -> Texture2D:

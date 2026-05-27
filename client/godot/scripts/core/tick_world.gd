@@ -37,6 +37,10 @@ func get_entity_position(entity_id: StringName) -> Vector2i:
 	return _entity_positions.get(entity_id, Vector2i.ZERO)
 
 
+func get_walkability():
+	return _walkability
+
+
 func enqueue_action(action) -> void:
 	assert(_GameAction.is_major_type(action.type), "Only major actions can be enqueued")
 	_action_queue.append(action)

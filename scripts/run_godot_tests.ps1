@@ -25,5 +25,13 @@ if (-not $GodotExe -or -not (Test-Path $GodotExe)) {
 }
 
 Write-Host "Using: $GodotExe"
+
+$luaExt = Join-Path $project "addons\lua-gdextension\luagdextension.gdextension"
+if (Test-Path $luaExt) {
+    Write-Host "Importing project (GDExtension)..."
+    & $GodotExe --headless --path $project --import --quit
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+}
+
 & $GodotExe --headless --path $project -s res://tests/run_tests.gd
 exit $LASTEXITCODE

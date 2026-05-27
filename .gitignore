@@ -4,6 +4,8 @@
 *.import
 client/godot/assets/mixel
 client/godot/data/mvp
+client/godot/addons/lua-gdextension/
+lua_gdextension/
 export/
 export_presets.cfg
 *.translation
