@@ -48,7 +48,7 @@
       "title_key": "quest.kite_wolf.title",
       "mode": "script",
       "order": 7,
-      "api_unlock": ["setDesiredRange"]
+      "api_unlock": ["attack", "setDesiredRange"]
     },
     {
       "id": "quest_use_potions",
@@ -69,7 +69,7 @@
       "title_key": "quest.bandit_mini.title",
       "mode": "script",
       "order": 10,
-      "api_unlock": ["equip", "unequip"]
+      "api_unlock": ["attack", "equip", "unequip"]
     }
   ]
 }

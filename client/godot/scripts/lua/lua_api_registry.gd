@@ -11,7 +11,7 @@ const BASE_READS: Array[String] = [
 	"getInventory", "nearestEnemy", "nearestLoot", "isTileWalkable", "distanceTo",
 ]
 
-const BASE_ACTIONS: Array[String] = ["move", "moveTo"]
+const BASE_ACTIONS: Array[String] = ["move", "moveTo", "attack"]
 
 const ALL_KNOWN: Array[String] = [
 	"getTick", "getPosition", "getHp", "getMana", "getMaxHp", "getMaxMana",

@@ -26,3 +26,4 @@ func _test_unlock_includes_move_after_quests() -> void:
 	var allowed: Array[String] = LuaApiRegistry.unlocked_for_tutorial_complete(store)
 	_assert_true("move" in allowed, "move unlocked")
 	_assert_true("buy" in allowed, "buy unlocked from quest_shop_loop")
+	_assert_true("attack" in allowed, "attack unlocked for combat")
