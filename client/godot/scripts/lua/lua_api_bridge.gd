@@ -45,6 +45,10 @@ func has_pending_path() -> bool:
 	return not _path_queue.is_empty()
 
 
+func clear_pending() -> void:
+	_path_queue.clear()
+
+
 func was_last_move_to_ok() -> bool:
 	return _last_move_to_ok
 

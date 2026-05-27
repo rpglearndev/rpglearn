@@ -54,6 +54,16 @@ func _resolve_allowed_apis() -> Array[String]:
 	return allowed
 
 
+func halt() -> void:
+	## Stop inmediato: no más on_tick y vacía movimientos ya encolados.
+	enabled = false
+	if bridge == null:
+		return
+	bridge.clear_pending()
+	if bridge.world != null:
+		bridge.world.clear_action_queue()
+
+
 func on_world_tick() -> void:
 	if not enabled or bridge == null:
 		return

@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "templates": [
+    {
+      "quest_id": "quest_variables_state",
+      "template": "function on_tick()\n  local hp = getHp()\n  local mana = getMana()\n  local pos = getPosition()\n  -- TODO: usa pos.x y pos.y\nend\n"
+    },
+    {
+      "quest_id": "quest_if_safe_or_heal",
+      "template": "function on_tick()\n  local hp = getHp()\n  local threshold = 50\n  if hp < threshold then\n    -- TODO: usePotion()\n  else\n    move(\"N\")\n  end\nend\n"
+    },
+    {
+      "quest_id": "quest_loop_patrol",
+      "template": "function on_tick()\n  for i = 1, 2 do\n    move(\"N\")\n  end\n  for i = 1, 2 do\n    move(\"S\")\n  end\nend\n"
+    },
+    {
+      "quest_id": "quest_function_move_to_flag",
+      "template": "function goToFlag(x, y)\n  return moveTo(x, y)\nend\n\nfunction on_tick()\n  goToFlag(12, 8)\nend\n"
+    },
+    {
+      "quest_id": "quest_inventory_caps",
+      "template": "function on_tick()\n  local inv = getInventory()\n  local cap = getCapacity()\n  -- TODO: revisar peso con getCarryWeight()\nend\n"
+    },
+    {
+      "quest_id": "quest_kite_wolf",
+      "template": "function on_tick()\n  setDesiredRange(2)\n  -- TODO: combate / movimiento\nend\n"
+    },
+    {
+      "quest_id": "quest_use_potions",
+      "template": "function on_tick()\n  if getHp() < 40 then\n    usePotion()\n  end\nend\n"
+    },
+    {
+      "quest_id": "quest_shop_loop",
+      "template": "function on_tick()\n  -- TODO: buy / sell en tienda\nend\n"
+    },
+    {
+      "quest_id": "quest_bandit_mini",
+      "template": "function on_tick()\n  -- TODO: equip / unequip\nend\n"
+    }
+  ]
+}

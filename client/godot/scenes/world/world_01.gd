@@ -9,8 +9,7 @@ const _WorldZoneMap := preload("res://scripts/world/world_zone_map.gd")
 const _WorldZone := preload("res://scripts/world/world_zone.gd")
 const _MixelSpriteLoader := preload("res://scripts/world/mixel_sprite_loader.gd")
 const _LuaScriptRunner := preload("res://scripts/lua/lua_script_runner.gd")
-const _LuaSandbox := preload("res://scripts/lua/lua_sandbox.gd")
-
+const _LuaEditorController := preload("res://scripts/ui/lua_editor_controller.gd")
 const TILE_SIZE := 32
 
 @onready var _ground: TileMapLayer = $Ground
@@ -20,13 +19,14 @@ const TILE_SIZE := 32
 @onready var _camera: Camera2D = $Camera2D
 @onready var _hud: Label = $HUD/InfoLabel
 @onready var _joystick: Control = $HUD/VirtualJoystick
+@onready var _lua_editor = $LuaEditor
 
 var world = null
 var _runner = null
 var _manual_input = null
 var _zone_map = null
 var _lua_runner = null
-var _lua_status: String = ""
+var _editor_ctrl = null
 
 
 func _ready() -> void:
@@ -48,15 +48,20 @@ func _ready() -> void:
 		_joystick.cardinal_changed.connect(_on_joystick_cardinal)
 	_lua_runner = _LuaScriptRunner.new()
 	_lua_runner.setup(world, &"player")
+	_editor_ctrl = _LuaEditorController.new()
+	_editor_ctrl.setup(world, &"player", _lua_runner, _manual_input)
+	_lua_editor.bind_controller(_editor_ctrl)
 	_refresh_hud()
 
 
 func _on_tick_processed(_tick_index: int) -> void:
-	if _lua_runner != null and _lua_runner.enabled:
+	if _editor_ctrl.allows_lua_tick():
 		_lua_runner.on_world_tick()
 		if not _lua_runner.enabled:
-			_lua_status = "error: %s" % _lua_runner.get_last_lua_error()
-	else:
+			var raw: String = _lua_runner.get_last_lua_error()
+			if not raw.is_empty() and _lua_editor.is_open():
+				_lua_editor.log_console(_editor_ctrl.on_script_runtime_error(raw))
+	elif _editor_ctrl.allows_manual_tick():
 		_manual_input.on_tick_processed(world, &"player")
 	_sync_player_visual()
 	_refresh_hud()
@@ -100,12 +105,12 @@ func _refresh_hud() -> void:
 	var practice := "sí" if _zone_map.is_practice_area(cell) else "no"
 	var data_line := _mvp_data_hud_line()
 	var lua_line := "Lua: off"
-	if _lua_runner != null and _lua_runner.enabled:
+	if _editor_ctrl.is_manual_override():
+		lua_line = "Lua: manual"
+	elif _editor_ctrl.is_script_running():
 		lua_line = "Lua: ON"
-	elif not _lua_status.is_empty():
-		lua_line = "Lua: %s" % _lua_status
 	_hud.text = (
-		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\n%s | %s\nWASD + joystick | L = Lua demo (también 0 / F10)"
+		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\n%s | %s\nWASD | E = editor Lua"
 		% [world.tick_index, cell.x, cell.y, _WorldZone.id_to_string(zone_id), practice, data_line, lua_line]
 	)
 
@@ -118,52 +123,25 @@ func _mvp_data_hud_line() -> String:
 
 
 func _process(_delta: float) -> void:
-	## InputMap: L / 0 / F10 (portátiles sin fila F suelen mandar 0 con Fn, no F10).
-	if Input.is_action_just_pressed("debug_lua_demo"):
-		_toggle_lua_demo()
+	if Input.is_action_just_pressed("toggle_lua_editor"):
+		_lua_editor.toggle_visible()
 	elif OS.is_debug_build() and Input.is_action_just_pressed("debug_mvp_reload"):
 		if MvpData.reload():
+			_lua_editor.populate_quests()
 			_refresh_hud()
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
+	if _lua_editor.is_open():
+		return
 	if _manual_input.handle_key_event(world, &"player", event):
 		get_viewport().set_input_as_handled()
 
 
 func _on_joystick_cardinal(dir: Vector2i) -> void:
+	if _lua_editor.is_open():
+		return
 	_manual_input.set_joystick_cardinal(world, &"player", dir)
-
-
-func _toggle_lua_demo() -> void:
-	if not _LuaSandbox.is_extension_available():
-		_lua_status = "extensión no instalada — ejecuta scripts/setup_lua_gdextension.ps1 y reabre el proyecto"
-		push_warning(_lua_status)
-		_refresh_hud()
-		return
-	if _lua_runner.enabled:
-		_lua_runner.enabled = false
-		_lua_status = "off"
-		_refresh_hud()
-		return
-	var src := """
-function on_tick()
-  local pos = getPosition()
-  if pos.x < 14 then
-    move("E")
-  elseif pos.x > 16 then
-    move("W")
-  end
-end
-"""
-	if _lua_runner.load_source(src):
-		_lua_runner.enabled = true
-		_manual_input.clear_active(world, &"player")
-		_lua_status = ""
-	else:
-		_lua_status = "error carga: %s" % _lua_runner.get_last_lua_error()
-		push_warning("Lua demo: %s" % _lua_status)
-	_refresh_hud()
 
 
 func _load_player_texture() -> Texture2D:

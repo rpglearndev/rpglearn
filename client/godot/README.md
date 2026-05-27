@@ -27,7 +27,7 @@ Salida esperada: `All tests passed (TickWorld + ManualTickInput + World01 + MvpD
 | `scenes/world/world_01.tscn` | **Main** — mapa World_01 (US-012) + movimiento |
 | `scenes/debug/tick_debug.tscn` | Solo motor de ticks (US-010) |
 
-## Lua sandbox (US-030)
+## Lua sandbox (US-030) + editor (US-031)
 
 Requiere [lua-gdextension](https://github.com/gilzoide/lua-gdextension) (no va en git):
 
@@ -35,11 +35,11 @@ Requiere [lua-gdextension](https://github.com/gilzoide/lua-gdextension) (no va e
 .\scripts\setup_lua_gdextension.ps1
 ```
 
-En juego: tecla **L** activa el script demo (patrulla E/W). También **0** o **F10** (Fn+0 en portátiles sin teclas F). El HUD muestra `Lua: ON` o el motivo del fallo.
+En juego: **E** abre el editor (CodeEdit, Run/Stop, consola con keys i18n). Desplegable carga plantillas desde `data/mvp/quest_templates.json`. **Manual** = override si el script falla.
 
-Debug: **M** recarga datos MVP (antes F9).
+Debug: **M** recarga datos MVP.
 
-**Si no reacciona:** clic en la ventana del juego (foco), `setup_lua_gdextension.ps1`, reabrir proyecto en Godot.
+**Si Lua no arranca:** `setup_lua_gdextension.ps1` + reimportar proyecto en Godot.
 
 ## Datos MVP (US-090)
 

@@ -20,6 +20,8 @@ static func load_all() -> MvpDataStore:
 		return null
 	if not _load_spawns(store):
 		return null
+	if not _load_quest_templates(store):
+		return null
 	return store
 
 
@@ -85,4 +87,14 @@ static func _load_spawns(store: MvpDataStore) -> bool:
 		return false
 	store.map_id = str(root.get("map_id", ""))
 	store.spawns = root.get("spawns", [])
+	return true
+
+
+static func _load_quest_templates(store: MvpDataStore) -> bool:
+	var root: Variant = _read_json(MvpDataPaths.QUEST_TEMPLATES)
+	if root == null or not root is Dictionary:
+		return false
+	for row in root.get("templates", []):
+		if row is Dictionary and row.has("quest_id"):
+			store.quest_templates[str(row["quest_id"])] = str(row.get("template", ""))
 	return true

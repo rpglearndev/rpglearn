@@ -9,6 +9,7 @@ var quests_by_id: Dictionary = {}
 var shops: Dictionary = {}
 var spawns: Array = []
 var map_id: String = ""
+var quest_templates: Dictionary = {}
 
 
 func get_monster(id: String) -> Dictionary:
@@ -25,3 +26,7 @@ func get_quest(id: String) -> Dictionary:
 
 func get_shop(id: String) -> Dictionary:
 	return shops.get(id, {})
+
+
+func get_quest_template(quest_id: String) -> String:
+	return str(quest_templates.get(quest_id, ""))
