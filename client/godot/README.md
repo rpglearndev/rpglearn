@@ -2,7 +2,7 @@
 
 ## Requisitos
 
-- [Godot 4.3+](https://godotengine.org/)
+- [Godot 4.3+](https://godotengine.org/) (probado con 4.6.3)
 
 ## Abrir proyecto
 
@@ -12,15 +12,13 @@ Importa esta carpeta (`client/godot`) en el editor Godot.
 
 Desde la raíz del repo, con `godot` en el PATH:
 
-```bash
-godot --headless --path client/godot -s res://tests/run_tests.gd
-```
-
-Windows (ejemplo):
+Desde la raíz del repo:
 
 ```powershell
-& "C:\Program Files\Godot\Godot_v4.3-stable_win64.exe" --headless --path client/godot -s res://tests/run_tests.gd
+.\scripts\run_godot_tests.ps1
 ```
+
+Detecta automáticamente `C:\Program Files\Godot\Godot*.exe` o usa `GODOT_PATH`.
 
 ## Escena debug
 
