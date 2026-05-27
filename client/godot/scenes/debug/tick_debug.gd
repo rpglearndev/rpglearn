@@ -7,6 +7,7 @@ const _GameAction := preload("res://scripts/core/game_action.gd")
 
 var world = null
 var _runner = null
+var _held_dir: Vector2i = Vector2i.ZERO
 
 @onready var _label: Label = $VBox/InfoLabel
 
@@ -22,11 +23,13 @@ func _ready() -> void:
 
 
 func _on_tick_processed(_tick_index: int) -> void:
+	if _held_dir != Vector2i.ZERO:
+		world.enqueue_action(_GameAction.move(&"player", _held_dir))
 	_refresh()
 
 
 func _refresh() -> void:
-	var pos := world.get_entity_position(&"player")
+	var pos: Vector2i = world.get_entity_position(&"player")
 	_label.text = "Tick: %d | TPS: %d | Player: (%d, %d)\nWASD = encolar movimiento" % [
 		world.tick_index,
 		world.ticks_per_second,
@@ -36,9 +39,9 @@ func _refresh() -> void:
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if not event is InputEventKey or not event.pressed or event.echo:
+	if not event is InputEventKey or event.echo:
 		return
-	var dir := Vector2i.ZERO
+	var dir: Vector2i = Vector2i.ZERO
 	match event.keycode:
 		KEY_W, KEY_UP:
 			dir = Vector2i.UP
@@ -50,5 +53,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			dir = Vector2i.RIGHT
 		_:
 			return
-	world.enqueue_action(_GameAction.move(&"player", dir))
+	if dir == Vector2i.ZERO:
+		return
+	if event.pressed:
+		_held_dir = dir
+	else:
+		if _held_dir == dir:
+			_held_dir = Vector2i.ZERO
 	get_viewport().set_input_as_handled()
