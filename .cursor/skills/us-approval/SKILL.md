@@ -14,7 +14,9 @@ El orquestador actúa como **facilitador**; **tú (el usuario)** eres el decisor
 
 ## Cuándo activar
 
-- Tras `04-e2e.md` con **PASS** (o con FAIL — entonces no pedir aprobación, volver atrás).
+- Tras `04-e2e.md` con **PASS** **y** sección “Evidencia de ejecución” con exit code `0` y salida pegada.
+- Si `04-e2e.md` es PASS sin salida de comando → tratar como **FAIL de proceso**; re-ejecutar E2E, no pedir aprobación.
+- Con **FAIL** o **BLOCKED** → no pedir aprobación; volver atrás.
 - Usuario escribe: `Aprobado US-XXX`, `Visto bueno US-XXX`, `Rechaza US-XXX`.
 
 ## Mensaje al usuario (plantilla obligatoria)

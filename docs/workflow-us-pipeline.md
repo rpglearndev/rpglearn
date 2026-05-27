@@ -17,7 +17,7 @@ El agente (orquestador) leerá `.cursor/skills/us-pipeline/SKILL.md` y ejecutar�
 | 1 | **Implementer** | TDD: tests rojos → código → verde |
 | 2 | **Reviewer** | Audita vs criterios y arquitectura; puede bloquear |
 | 3 | **Refactorer** | Limpia sin cambiar comportamiento |
-| 4 | **E2E Tester** | Matriz de aceptación con evidencia |
+| 4 | **E2E Tester** | Ejecuta tests; pega salida en `04-e2e.md`. Sin ejecución = FAIL/BLOCKED |
 | 5 | **Tú** | `Aprobado US-010` o `Rechaza US-010` |
 
 ## Comandos de control
@@ -67,6 +67,16 @@ Cada US genera informes en:
 
 - Arquitectura: `.cursor/rules/rpglearn-architecture.mdc`
 - Gates (no saltar fases): `.cursor/rules/us-pipeline-gates.mdc`
+
+## E2E: sin ejecución no hay PASS
+
+El agente E2E **debe** correr por ejemplo:
+
+```powershell
+.\scripts\run_godot_tests.ps1
+```
+
+y pegar la salida en `04-e2e.md`. Marcar PASS solo con **exit code 0**. Si Godot no está disponible en el entorno del agente, el veredicto es **BLOCKED** hasta que alguien ejecute los tests y quede evidencia — no “pendiente local” disfrazado de PASS.
 
 ## Diagrama
 
