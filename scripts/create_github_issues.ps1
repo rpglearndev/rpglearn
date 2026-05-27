@@ -77,7 +77,8 @@ $labelMap = @{
 }
 
 $content = Get-Content $backlogPath -Raw -Encoding UTF8
-$pattern = '(?ms)^#### (US-\d+) — (.+?)^\r?\n(.*?)(?=^---\r?\n|^### Epic |^### Orden |\z)'
+# Title line may use em dash, hyphen, or mojibake; body ends at next --- or Epic header
+$pattern = '(?ms)^#### (US-\d+)\s+.+?\r?\n(.*?)(?=^---\r?\n|^### Epic |^### Orden |\z)'
 $matches = [regex]::Matches($content, $pattern)
 
 Write-Host "Found $($matches.Count) user stories in backlog.md"
@@ -85,26 +86,17 @@ Write-Host "Found $($matches.Count) user stories in backlog.md"
 foreach ($m in $matches) {
     $idFull = $m.Groups[1].Value
     $id = $idFull -replace 'US-', ''
-    $subtitle = $m.Groups[2].Value.Trim()
-    $body = $m.Groups[3].Value.Trim()
-    $epicLine = ""
-    if ($body -match '(?m)^### Epic (.+)$') { $epicLine = $Matches[0] }
+    $body = $m.Groups[2].Value.Trim()
 
     $titleKey = $titleMap[$id]
-    if (-not $titleKey) { $titleKey = $subtitle }
-    $title = "US-$id — $titleKey"
+    if (-not $titleKey) { $titleKey = "user story" }
+    $title = "US-$id - $titleKey"
 
-    $fullBody = @"
-**Epic:** ver sección en [docs/backlog.md](../docs/backlog.md)
-
-$body
-
----
-Documentación: [docs/plan.md](../docs/plan.md) | [docs/backlog.md](../docs/backlog.md)
-"@
+    $footer = "---`nDocs: [plan](https://github.com/$Repo/blob/master/docs/plan.md) | [backlog](https://github.com/$Repo/blob/master/docs/backlog.md)"
+    $fullBody = "**Backlog:** US-$id`n`n$body`n`n$footer"
 
     $bodyFile = Join-Path $bodyDir "US-$id.md"
-    Set-Content -Path $bodyFile -Value $fullBody -Encoding utf8NoBOM
+    [System.IO.File]::WriteAllText($bodyFile, $fullBody, [System.Text.UTF8Encoding]::new($false))
 
     $labels = $labelMap[$id]
     if (-not $labels) { $labels = @("user-story") }
