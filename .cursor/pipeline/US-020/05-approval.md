@@ -10,4 +10,5 @@ Combate por ticks: `attack`, rango melee (8 dirs) / `setDesiredRange`, daño des
 
 ## Integración git
 
-Pendiente en este paso: merge `master` → `us_pipeline.ps1 approve US-020`.
+- Rama: `us/020-combat-ticks` → merge fast-forward en `origin/master` (`2e194a9`)
+- Issue #6 cerrada vía `us_pipeline.ps1 approve US-020`
