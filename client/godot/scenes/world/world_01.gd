@@ -64,8 +64,9 @@ func _ready() -> void:
 
 
 func _on_tick_processed(_tick_index: int) -> void:
+	var manual_input_allowed: bool = not _lua_editor.is_open() or _editor_ctrl.is_manual_override()
 	var manual_dir := Vector2i.ZERO
-	if not _lua_editor.is_open():
+	if manual_input_allowed:
 		manual_dir = _manual_input.effective_direction()
 	if manual_dir != Vector2i.ZERO:
 		if _editor_ctrl.is_script_running():
@@ -80,7 +81,7 @@ func _on_tick_processed(_tick_index: int) -> void:
 				var raw: String = _lua_runner.get_last_lua_error()
 				if not raw.is_empty() and _lua_editor.is_open():
 					_lua_editor.log_console(_editor_ctrl.on_script_runtime_error(raw))
-	elif _editor_ctrl.allows_manual_tick():
+	elif _editor_ctrl.allows_manual_tick() and manual_input_allowed:
 		_manual_input.on_tick_processed(world, &"player")
 	_sync_entity_visuals()
 	_refresh_hud()
@@ -121,9 +122,6 @@ func _clamp_camera_center(target: Vector2) -> Vector2:
 
 
 func _refresh_hud() -> void:
-	if _lua_editor.is_open():
-		_hud_layer.visible = false
-		return
 	_hud_layer.visible = true
 	var cell: Vector2i = world.get_entity_position(&"player")
 	var zone_id: int = _zone_map.get_zone(cell)
@@ -136,7 +134,7 @@ func _refresh_hud() -> void:
 		lua_line = "Lua: ON"
 	var combat_line := _combat_hud_line()
 	_hud.text = (
-		"World_01 | Tick %d | Player (%d,%d) | Zona: %s | Práctica: %s\n%s | %s | %s\nWASD (Stop script) | E = editor"
+		"Tick %d | (%d,%d) | %s | %s\n%s | %s | %s\nWASD | E editor | Esc cerrar"
 		% [world.tick_index, cell.x, cell.y, _WorldZone.id_to_string(zone_id), practice, data_line, lua_line, combat_line]
 	)
 
@@ -179,7 +177,7 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if _lua_editor.is_open():
+	if _lua_editor.is_open() and not _editor_ctrl.is_manual_override():
 		return
 	if _editor_ctrl.is_script_running() and event is InputEventKey:
 		var key := event as InputEventKey

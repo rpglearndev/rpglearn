@@ -1,15 +1,17 @@
 extends CanvasLayer
-## Editor Lua in-game: CodeEdit, Run/Stop, consola i18n, plantillas por quest_id (US-031).
+## Editor Lua acoplado a la derecha: mapa visible, botones con iconos (US-031 UX).
 
 const LuaEditorController := preload("res://scripts/ui/lua_editor_controller.gd")
 const QuestValidationI18n := preload("res://scripts/quest/quest_validation_i18n.gd")
 const LuaCodeEditTheme := preload("res://scripts/ui/lua_code_edit_theme.gd")
+const LuaEditorIcons := preload("res://scripts/ui/lua_editor_icons.gd")
+
+const DOCK_WIDTH := 340
 
 signal closed
 
 var controller: LuaEditorController = null
 
-var _backdrop: ColorRect
 var _panel: PanelContainer
 var _objective: Label
 var _code_edit: CodeEdit
@@ -46,6 +48,9 @@ func open_editor() -> void:
 	visible = true
 	_update_objective_label()
 	_code_edit.grab_focus()
+	# Evita que teclas ya pulsadas (WASD) muevan al personaje al abrir.
+	if controller != null and controller.manual_input != null:
+		controller.manual_input.clear_active(controller.world, controller.entity_id)
 
 
 func close_editor() -> void:
@@ -85,7 +90,6 @@ func clear_console() -> void:
 
 
 func log_console(result: Dictionary) -> void:
-	## Mensaje legible (validación u otros) sin prefijo técnico duplicado.
 	var text: String = str(result.get("text", ""))
 	if text.is_empty():
 		return
@@ -101,89 +105,105 @@ func _resize_console_width() -> void:
 
 
 func _build_ui() -> void:
-	_backdrop = ColorRect.new()
-	_backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_backdrop.color = Color(0.05, 0.06, 0.1, 0.82)
-	_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
-	add_child(_backdrop)
+	var root := Control.new()
+	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(root)
 
-	var center := MarginContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	center.add_theme_constant_override("margin_left", 24)
-	center.add_theme_constant_override("margin_right", 24)
-	center.add_theme_constant_override("margin_top", 20)
-	center.add_theme_constant_override("margin_bottom", 20)
-	_backdrop.add_child(center)
+	var row := HBoxContainer.new()
+	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(row)
+
+	var passthrough := Control.new()
+	passthrough.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	passthrough.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(passthrough)
+
+	var dock_margin := MarginContainer.new()
+	dock_margin.mouse_filter = Control.MOUSE_FILTER_STOP
+	dock_margin.custom_minimum_size.x = DOCK_WIDTH
+	dock_margin.add_theme_constant_override("margin_top", 8)
+	dock_margin.add_theme_constant_override("margin_bottom", 8)
+	dock_margin.add_theme_constant_override("margin_right", 8)
+	row.add_child(dock_margin)
 
 	_panel = PanelContainer.new()
-	_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var panel_style := StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.12, 0.13, 0.18, 0.98)
-	panel_style.border_color = Color(0.45, 0.55, 0.75, 0.9)
-	panel_style.set_border_width_all(2)
-	panel_style.set_corner_radius_all(6)
-	panel_style.content_margin_left = 14
-	panel_style.content_margin_right = 14
-	panel_style.content_margin_top = 12
-	panel_style.content_margin_bottom = 12
+	panel_style.bg_color = Color(0.1, 0.11, 0.15, 0.94)
+	panel_style.border_color = Color(0.4, 0.5, 0.65, 0.85)
+	panel_style.set_border_width_all(1)
+	panel_style.set_border_width(SIDE_LEFT, 2)
+	panel_style.set_corner_radius_all(4)
+	panel_style.content_margin_left = 10
+	panel_style.content_margin_right = 10
+	panel_style.content_margin_top = 8
+	panel_style.content_margin_bottom = 8
 	_panel.add_theme_stylebox_override("panel", panel_style)
-	center.add_child(_panel)
+	dock_margin.add_child(_panel)
 
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 8)
+	vbox.add_theme_constant_override("separation", 6)
 	_panel.add_child(vbox)
 
-	var title := Label.new()
-	title.text = "Editor Lua — E abrir · Esc o Cerrar para salir"
-	title.add_theme_color_override("font_color", Color(0.92, 0.94, 1.0))
-	title.add_theme_font_size_override("font_size", 16)
-	vbox.add_child(title)
+	var header := HBoxContainer.new()
+	header.add_theme_constant_override("separation", 6)
+	vbox.add_child(header)
 
-	var toolbar := HBoxContainer.new()
-	toolbar.add_theme_constant_override("separation", 6)
-	vbox.add_child(toolbar)
+	var title := Label.new()
+	title.text = "Lua"
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	title.add_theme_color_override("font_color", Color(0.9, 0.93, 1.0))
+	title.add_theme_font_size_override("font_size", 15)
+	header.add_child(title)
+
+	_close_btn = _make_icon_button(LuaEditorIcons.close(), "Cerrar (Esc)")
+	header.add_child(_close_btn)
 
 	_quest_select = OptionButton.new()
-	_quest_select.custom_minimum_size.x = 240
-	toolbar.add_child(_quest_select)
+	_quest_select.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.add_child(_quest_select)
 
-	_validate_btn = _make_toolbar_button("Validar")
-	_run_btn = _make_toolbar_button("Run")
-	_stop_btn = _make_toolbar_button("Stop")
-	_override_btn = _make_toolbar_button("Manual")
-	_close_btn = _make_toolbar_button("Cerrar")
-	for b in [_validate_btn, _run_btn, _stop_btn, _override_btn, _close_btn]:
+	var toolbar := HBoxContainer.new()
+	toolbar.add_theme_constant_override("separation", 4)
+	vbox.add_child(toolbar)
+
+	_validate_btn = _make_icon_button(LuaEditorIcons.validate(), "Validar script")
+	_run_btn = _make_icon_button(LuaEditorIcons.run(), "Ejecutar (Run)")
+	_stop_btn = _make_icon_button(LuaEditorIcons.stop(), "Detener (Stop)")
+	_override_btn = _make_icon_button(LuaEditorIcons.manual(), "Control manual (WASD)")
+	for b in [_validate_btn, _run_btn, _stop_btn, _override_btn]:
 		toolbar.add_child(b)
 
 	_objective = Label.new()
 	_objective.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_objective.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0))
-	_objective.add_theme_font_size_override("font_size", 14)
+	_objective.max_lines_visible = 3
+	_objective.add_theme_color_override("font_color", Color(0.7, 0.82, 0.95))
+	_objective.add_theme_font_size_override("font_size", 12)
 	vbox.add_child(_objective)
 
 	_code_edit = CodeEdit.new()
-	_code_edit.custom_minimum_size.y = 120
+	_code_edit.custom_minimum_size.y = 100
 	_code_edit.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_code_edit.size_flags_stretch_ratio = 0.38
+	_code_edit.size_flags_stretch_ratio = 1.0
 	_code_edit.placeholder_text = "function on_tick()\n  -- tu código\nend"
 	_code_edit.gutters_draw_line_numbers = true
 	LuaCodeEditTheme.apply(_code_edit)
 	vbox.add_child(_code_edit)
 
 	var console_panel := PanelContainer.new()
-	console_panel.custom_minimum_size.y = 200
-	console_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	console_panel.size_flags_stretch_ratio = 0.48
+	console_panel.custom_minimum_size.y = 110
+	console_panel.size_flags_vertical = Control.SIZE_SHRINK_END
 	var console_style := StyleBoxFlat.new()
 	console_style.bg_color = Color(0.06, 0.07, 0.1, 1.0)
-	console_style.border_color = Color(0.35, 0.4, 0.5)
+	console_style.border_color = Color(0.32, 0.38, 0.48)
 	console_style.set_border_width_all(1)
-	console_style.set_corner_radius_all(4)
-	console_style.content_margin_left = 8
-	console_style.content_margin_right = 8
-	console_style.content_margin_top = 6
-	console_style.content_margin_bottom = 6
+	console_style.set_corner_radius_all(3)
+	console_style.content_margin_left = 6
+	console_style.content_margin_right = 6
+	console_style.content_margin_top = 4
+	console_style.content_margin_bottom = 4
 	console_panel.add_theme_stylebox_override("panel", console_style)
 	vbox.add_child(console_panel)
 
@@ -199,36 +219,45 @@ func _build_ui() -> void:
 	_console.fit_content = true
 	_console.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_console.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_console.add_theme_color_override("default_color", Color(0.95, 0.96, 0.98))
-	_console.add_theme_font_size_override("normal_font_size", 14)
+	_console.add_theme_color_override("default_color", Color(0.92, 0.94, 0.98))
+	_console.add_theme_font_size_override("normal_font_size", 12)
 	_console_scroll.add_child(_console)
 
 
-func _make_toolbar_button(label: String) -> Button:
+func _make_icon_button(icon_tex: ImageTexture, tooltip: String) -> Button:
 	var btn := Button.new()
-	btn.text = label
-	_style_button(btn)
+	btn.icon = icon_tex
+	btn.expand_icon = true
+	btn.text = ""
+	btn.tooltip_text = tooltip
+	btn.custom_minimum_size = Vector2(36, 36)
+	btn.focus_mode = Control.FOCUS_NONE
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = Color(0.18, 0.2, 0.28, 0.9)
+	normal.set_corner_radius_all(4)
+	var hover := normal.duplicate()
+	hover.bg_color = Color(0.28, 0.32, 0.42, 0.95)
+	var pressed := normal.duplicate()
+	pressed.bg_color = Color(0.14, 0.16, 0.22, 1.0)
+	btn.add_theme_stylebox_override("normal", normal)
+	btn.add_theme_stylebox_override("hover", hover)
+	btn.add_theme_stylebox_override("pressed", pressed)
+	btn.add_theme_stylebox_override("focus", normal)
 	return btn
-
-
-func _style_button(ctrl: Control) -> void:
-	if ctrl is Button:
-		ctrl.add_theme_color_override("font_color", Color(0.95, 0.96, 1.0))
-		ctrl.add_theme_font_size_override("font_size", 14)
 
 
 func _update_objective_label() -> void:
 	var qid := get_selected_quest_id()
 	var goal := QuestValidationI18n.goal_for_quest(qid)
 	if goal.is_empty():
-		_objective.text = "Elige una misión del desplegable. Validar revisa tu código; Run lo ejecuta en el mapa."
+		_objective.text = "E = abrir · Esc = cerrar. Validar / Run / Stop con iconos."
 	else:
-		_objective.text = "Objetivo: %s" % goal
+		_objective.text = goal
 
 
 func populate_quests() -> void:
 	_quest_select.clear()
-	_quest_select.add_item("(elige misión)", -1)
+	_quest_select.add_item("(misión)", -1)
 	if not MvpData.is_loaded():
 		return
 	for quest in MvpData.store.quests:
