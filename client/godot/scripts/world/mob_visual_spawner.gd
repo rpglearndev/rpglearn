@@ -2,7 +2,7 @@ class_name MobVisualSpawner
 extends RefCounted
 ## Sprites de mobs en el mapa (US-020 visibilidad; arte final US-021).
 
-const MixelSpriteLoader := preload("res://scripts/world/mixel_sprite_loader.gd")
+const MobSpriteLoader := preload("res://scripts/world/mob_sprite_loader.gd")
 const CombatSystem := preload("res://scripts/combat/combat_system.gd")
 const TickWorld := preload("res://scripts/core/tick_world.gd")
 
@@ -17,7 +17,7 @@ func build(parent: Node2D, world: TickWorld, combat: CombatSystem, tile_size: in
 		var sprite: Sprite2D = Sprite2D.new()
 		sprite.name = str(entity_id)
 		var mob_id: String = combat.get_mob_id(entity_id)
-		sprite.texture = MixelSpriteLoader.mob_placeholder(mob_id)
+		sprite.texture = MobSpriteLoader.texture_for(mob_id)
 		parent.add_child(sprite)
 		_sprites[entity_id] = sprite
 	sync(world, combat, tile_size)
